@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "SONAAR: Add Alts",
+  "version": "1.0.0",
+  "description": "This extension allows to add an alt text when posting images in social media.",
+  "short_name": "sonaar-add-alts",
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "storage",
+    "https://accessible-serv.lasige.di.fc.ul.pt/sonaar/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://twitter.com/*"],
+      "css": [],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_title": "Allows to add an alt text when posting images in social media.",
+    "default_popup": "popup.html"
+  }
+}
