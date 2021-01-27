@@ -34,9 +34,22 @@ chrome.runtime.onMessage.addListener(
 
           const save = document.querySelectorAll('div[role=button][data-focusable=true]')[1];
           save.addEventListener("click", function() {
-            const text = !alts ? textarea.textContent.trim() :
-              textarea.textContent.trim() !== alts[0].AltText.trim() ? textarea.textContent.trim() : undefined ;
-            chrome.runtime.sendMessage({type: "save", text });
+            if (alts && textarea.textContent.trim() !== "") {
+              let alreadyExists = false;
+              for (const alt of alts || []) {
+                if (alt.AltText.trim() === textarea.textContent.trim()) {
+                  alreadyExists = true;
+                  break;
+                }
+              }
+              if (!alreadyExists) {
+                chrome.runtime.sendMessage({type: "save", text: textarea.textContent.trim() });
+              } else {
+                chrome.runtime.sendMessage({type: "save", text: undefined });
+              }
+            } else {
+              chrome.runtime.sendMessage({type: "save", text: undefined });
+            }            
           });
         }, 1000);
       });
