@@ -1,6 +1,3 @@
-const searchEndpoint = "https://accessible-serv.lasige.di.fc.ul.pt/sonaar/clarifai/search";
-const insertEndpoint = "https://accessible-serv.lasige.di.fc.ul.pt/sonaar/clarifai/insertBuffer";
-
 function searchImage() {
   chrome.storage.local.get("imageBuffer", function(data) {
     if(typeof data.imageBuffer === "undefined") {

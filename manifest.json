@@ -18,7 +18,7 @@
     }
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["endpoints.js", "background.js"],
     "persistent": false
   },
   "browser_action": {
