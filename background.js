@@ -39,7 +39,7 @@ function submitImage(text) {
       http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       http.onreadystatechange = function() {
         if(http.readyState === 4 && http.status === 200) {
-          alert(http.responseText);
+          //alert(http.responseText);
         }
       }
 

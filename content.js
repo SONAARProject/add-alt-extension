@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener(
             return alt.AltText.trim();
           }).join("\n");
 
-          const save = document.querySelectorAll('div[role=button][data-focusable=true]')[1];
+          const save = document.querySelector('div[class="css-18t94o4 css-1dbjc4n r-urgr8i r-42olwf r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-1n0xq6e r-1vsu8ta r-aj3cln r-1ny4l3l r-1fneopy r-o7ynqc r-6416eg r-lrvibr"]');
           save.addEventListener("click", function() {
             if (alts && textarea.textContent.trim() !== "") {
               let alreadyExists = false;
@@ -68,4 +68,4 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-setTimeout(grabPostingInput, 2000);
+setTimeout(grabPostingInput, 5000);
