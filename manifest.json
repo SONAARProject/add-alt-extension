@@ -8,13 +8,14 @@
     "activeTab",
     "declarativeContent",
     "storage",
+    "webNavigation",
     "https://accessible-serv.lasige.di.fc.ul.pt/sonaar/*"
   ],
   "content_scripts": [
     {
-      "matches": ["https://twitter.com/*"],
+      "matches": ["<all_urls>"],
       "css": [],
-      "js": ["content.js"]
+      "js": ["md5.min.js", "content.js"]
     }
   ],
   "background": {

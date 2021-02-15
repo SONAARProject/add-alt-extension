@@ -1,4 +1,4 @@
-function searchImage() {
+function searchImage(platform) {
   chrome.storage.local.get("imageBuffer", function(data) {
     if(typeof data.imageBuffer === "undefined") {
       console.log('No data')
@@ -12,7 +12,7 @@ function searchImage() {
           
           if (response.status !== 4) {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-              chrome.tabs.sendMessage(tabs[0].id, {type: "checkAltText", alts: response?.alts });
+              chrome.tabs.sendMessage(tabs[0].id, { type: "checkAltText", platform, alts: response?.alts });
             });
           }
         }
@@ -48,11 +48,31 @@ function submitImage(text) {
   });
 }
 
+function searchByUrl(url, id) {
+  const http = new XMLHttpRequest();
+  http.open('GET', searchEndpoint + "/" + encodeURIComponent(url), true);
+  http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  http.onreadystatechange = function() {
+    if(http.readyState === 4 && http.status === 200) {
+      const response = JSON.parse(http.responseText);
+      
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {type: "altForImage", id, alts: response?.alts });
+      });
+    }
+  }
+
+  http.send();
+}
+
 chrome.runtime.onMessage.addListener(
   function(message, sender, sendResponse){      
     switch(message.type) {
       case "search":
-        searchImage();
+        searchImage(message.platform);
+        break;
+      case "searchUrl":
+        searchByUrl(message.url, message.id);
         break;
       case "save":
         saveText(message.text);
