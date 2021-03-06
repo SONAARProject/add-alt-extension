@@ -9,6 +9,7 @@
     "declarativeContent",
     "storage",
     "webNavigation",
+    "unlimitedStorage",
     "https://accessible-serv.lasige.di.fc.ul.pt/sonaar/*"
   ],
   "content_scripts": [

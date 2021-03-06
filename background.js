@@ -1,6 +1,6 @@
-function searchImage(platform) {
-  chrome.storage.local.get("imageBuffer", function(data) {
-    if(typeof data.imageBuffer === "undefined") {
+function searchImage(img) {
+  chrome.storage.local.get(img, function(data) {
+    if(typeof data[img] === "undefined") {
       console.log('No data')
     } else { 
       const http = new XMLHttpRequest();
@@ -12,26 +12,20 @@ function searchImage(platform) {
           
           if (response.status !== 4) {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-              chrome.tabs.sendMessage(tabs[0].id, { type: "checkAltText", platform, alts: response?.alts });
+              chrome.tabs.sendMessage(tabs[0].id, { type: "checkAltText", img, alts: response?.alts, concepts: response?.concepts });
             });
           }
         }
       }
-
-      http.send("imageBuffer=" + data.imageBuffer);
+      
+      http.send("imageBuffer=" + data[img]);
     }
   });
 }
 
-function saveText(text) {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, {type: "submitButton", text });
-  });
-}
-
-function submitImage(text) {
-  chrome.storage.local.get("imageBuffer", function(data) {
-    if(typeof data.imageBuffer === "undefined") {
+function submitImage(img, text) {
+  chrome.storage.local.get(img, function(data) {
+    if(typeof data[img] === "undefined") {
       console.log('No data')
     } else { 
       const http = new XMLHttpRequest();
@@ -43,7 +37,7 @@ function submitImage(text) {
         }
       }
 
-      http.send("imageBuffer=" + data.imageBuffer + "&altText=" + encodeURIComponent(text));
+      http.send("imageBuffer=" + data[img] + "&altText=" + encodeURIComponent(text));
     }
   });
 }
@@ -66,19 +60,16 @@ function searchByUrl(url, id) {
 }
 
 chrome.runtime.onMessage.addListener(
-  function(message, sender, sendResponse){      
+  function(message){      
     switch(message.type) {
       case "search":
-        searchImage(message.platform);
+        searchImage(message.img);
         break;
       case "searchUrl":
         searchByUrl(message.url, message.id);
         break;
-      case "save":
-        saveText(message.text);
-        break;
       case "submit":
-        submitImage(message.text);
+        submitImage(message.img, message.text);
         break;
       default:
         console.log("default message");
