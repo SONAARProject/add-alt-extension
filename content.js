@@ -38,8 +38,14 @@ function createDescription(img) {
 function setCURRENT(next) {
   if (next) {
     CURRENT = ORDER[ORDER.indexOf(CURRENT) + 1];
+    while (RESULT[CURRENT].removed) {
+      CURRENT = ORDER[ORDER.indexOf(CURRENT) + 1];
+    }
   } else {
     CURRENT = ORDER[ORDER.indexOf(CURRENT) - 1];
+    while (RESULT[CURRENT].removed) {
+      CURRENT = ORDER[ORDER.indexOf(CURRENT) - 1];
+    }
   }
 }
 
@@ -52,27 +58,29 @@ function copyToClipboard() {
 
 function cleanRespectiveImage() {
   const img = this.getAttribute('_remove_img_id');
-  if (ORDER.indexOf(img) !== -1) {
-    ORDER.splice(ORDER.indexOf(img));
+  if (img && !RESULT[img]?.removed) {
+    delete RESULT[img];
+    const indexOf = ORDER.indexOf(img);
+    if (indexOf !== -1) {
+      ORDER.splice(indexOf, 1);
+    }
+    COUNTER = ORDER.length;
   }
-  delete RESULT[img];
-  if (CURRENT === img) {
-    CURRENT = ORDER[0];
-  }
-  COUNTER--;
 }
 
 function handleTwitterRemoveImageButtons(removeImageButtons) {
   let i = 0;
-  
   for (const button of removeImageButtons) {
+    button.removeEventListener('click', cleanStepsProcess, true);
     if (!button.hasAttribute('_remove_img_id')) {
       button.setAttribute('_remove_img_id', ORDER[i]);
-
       button.removeEventListener('click', cleanRespectiveImage, true);
       button.addEventListener('click', cleanRespectiveImage, true);
-      i++;
+    } else {
+      button.removeEventListener('click', cleanRespectiveImage, true);
+      button.addEventListener('click', cleanRespectiveImage, true);
     }
+    i++;
   }
 }
 
@@ -85,7 +93,7 @@ function grabFacebookPublishButton() {
 }
 
 function publishButtonClicked() {
-  setTimeout(cleanStepsProcess, 500);
+  setTimeout(cleanStepsProcess, 200);
 }
 
 function handleTweetButton(tweetButton) {
@@ -99,7 +107,7 @@ function handleFacebookPublishButton(publishButton) {
 }
 
 function grabTwitterMediaInputs() {
-  return document.querySelectorAll("[class='r-8akbif r-orgf3d r-1udh08x r-u8s1d r-xjis5s r-1wyyakw']");
+  return document.querySelectorAll("input[class='r-8akbif r-orgf3d r-1udh08x r-u8s1d r-xjis5s r-1wyyakw']");
 }
 
 function grabFacebookMediaInputs() {
@@ -117,26 +125,27 @@ function handleImage() {
         const bytes = new Uint8Array(this.result);
 
         const img = md5(bytes);
-        RESULT[img] = {};
-        ORDER.push(img);
+        if (!RESULT[img]) {
+          RESULT[img] = {};
+        }
         
+        if (ORDER.includes(img)) {
+          const indexOf = ORDER.indexOf(img);
+          if (indexOf !== -1) {
+            ORDER.splice(indexOf, 1)
+          }
+        }
+
+        ORDER.push(img);
+
         const data = {};
         data[img] = JSON.stringify(bytes);
         
         chrome.storage.local.set(data);
         chrome.runtime.sendMessage({ type: "search", img });
-
+        
         if (COUNTER > 0 && reset) {
-          /*STEPS.splice(STEPS.indexOf("ADD_DESCRIPTION_HIDDEN"));
-          STEPS.splice(STEPS.indexOf("EDIT_BUTTON_HIDDEN"));
-          STEPS.splice(STEPS.indexOf("IMAGE_RESULT"));
-          STEPS.splice(STEPS.indexOf("SHOW_ADD_DESCRIPTION"));
-          STEPS.splice(STEPS.indexOf("SHOW_EDIT_BUTTON"));
-          STEPS.splice(STEPS.indexOf("DESCRIPTION_ADDED"));
-          STEPS.splice(STEPS.indexOf('REMOVE_IMAGE_BUTTON_HANDLED'));
-          STEPS.splice(STEPS.indexOf('DESCRIPTION_SAVED'));*/
           STEPS = new Array();
-          
           reset = false;
         }
       }
@@ -190,6 +199,7 @@ function showTwitterAddDescription(element) {
 
 function hideTwitterEditButtons(elements) {
   for (const element of elements) {
+    console.log(element);
     element.style["visibility"] = "hidden";
   }
 }
@@ -257,6 +267,11 @@ function showTwitterAlertMessage() {
 
         addDescription.removeEventListener('click', hideAddDescriptionDialog, true);
         addDescription.addEventListener('click', hideAddDescriptionDialog, true);
+
+        const altFoundDialog = document.getElementById('alt_found_dialog');
+        if (altFoundDialog) {
+          altFoundDialog.remove();
+        }
         
         const span = document.createElement('span');
         span.id = "add_description_dialog";
@@ -330,7 +345,6 @@ function handleFacebookAlertMessage(submitButton) {
 
 function grabTwitterTextarea() {
   return document.querySelector('[name="altTextInput"]');
-  //return document.querySelector('[class="r-30o5oe r-1niwhzg r-17gur6a r-1yadl64 r-deolkf r-homxoj r-poiln3 r-7cikom r-1ny4l3l r-t60dpp r-1dz5y72 r-1ttztb7 r-13qz1uu"]');
 }
 
 function grabFacebookSaveButton() {
@@ -368,17 +382,7 @@ function setNextImageButton(nextImageButton) {
   nextImageButton.addEventListener("click", hideNextImageButtonDialog, true);
 }
 
-function showTwitterCycleImageButtonDialog(/*previousImageButton, nextImageButton*/) {
-  /*if (previousImageButton) {
-    previousImageButton.removeEventListener("click", hidePreviousImageButtonDialog, true);
-    previousImageButton.addEventListener("click", hidePreviousImageButtonDialog, true);
-  }
-
-  if (nextImageButton) {
-    nextImageButton.removeEventListener("click", hideNextImageButtonDialog, true);
-    nextImageButton.addEventListener("click", hideNextImageButtonDialog, true);
-  }*/
-
+function showTwitterCycleImageButtonDialog() {
   chrome.storage.sync.get("disableTwitterDialogs", function(item) {
     if (!item.disableTwitterDialogs) {
       const pasteDialog = document.getElementById('paste_dialog');
@@ -475,7 +479,7 @@ function showFacebookSaveButtonDialog(saveButton) {
 function doAllImagesHaveAltText() {
   let yes = true;
   for (const img in RESULT) {
-    if (!RESULT[img]?.text) {
+    if (!RESULT[img]?.text && !RESULT[img]?.removed) {
       yes = false;
       break;
     }
@@ -498,9 +502,7 @@ function hidePasteDialog() {
             showTwitterSaveButtonDialog(saveButton);
           }
         } else {
-          //const previousImageButton = grabTwitterPreviousImageButton();
-          //const nextImageButton = grabTwitterNextImageButton();
-          showTwitterCycleImageButtonDialog(/*previousImageButton, nextImageButton*/);
+          showTwitterCycleImageButtonDialog();
         }
       }, 200);
     } else if (host.includes("facebook.com")) {
@@ -783,17 +785,15 @@ function getImageUrl(image) {
 function handlePostImagesData(img, _alts, _concepts) {
   const alts = _alts ? JSON.parse(_alts) : undefined;
   const concepts = _concepts ? JSON.parse(_concepts) : undefined;
-  RESULT[img] = { alts, concepts, show_paste_dialog: true  };
+  RESULT[img] = { alts, concepts, show_paste_dialog: true };
 
   createDescription(img);
-  console.log(RESULT);
 
   COUNTER++;
   
   if (COUNTER === Object.keys(RESULT).length) {
     STEPS.push('IMAGE_RESULT');
     CURRENT = ORDER[0];
-
     const host = location.host;
     if (host.includes("twitter.com")) {
       showTwitterAltMessage();
@@ -857,16 +857,16 @@ function initTwitterSupport() {
       const removeImageButtons = grabTwitterRemoveImageButtons();
       if (removeImageButtons.length > 0 && !STEPS.includes('REMOVE_IMAGE_BUTTON_HANDLED')) {
         if (removeImageButtons.length === 1) {
+          removeImageButtons[0].removeEventListener('click', cleanRespectiveImage, true);
           removeImageButtons[0].removeEventListener('click', cleanStepsProcess, true);
           removeImageButtons[0].addEventListener('click', cleanStepsProcess, true);
         } else {
           handleTwitterRemoveImageButtons(removeImageButtons);
         }
-        STEPS.push('REMOVE_IMAGE_BUTTON_HANDLED');
       }
 
       const mediaInputs = grabTwitterMediaInputs();
-      if (mediaInputs && mediaInputs.length > 0 && STEPS.length < 2 && !STEPS.includes('PROCESSING_MEDIA')) {
+      if (mediaInputs && mediaInputs.length > 0) {
         STEPS.push('PROCESSING_MEDIA');
         handlePostDetection(mediaInputs);
       }
@@ -885,7 +885,9 @@ function initTwitterSupport() {
       const editButtons = grabTwitterEditButtonsInterface();
       if (editButtons.length > 0 && STEPS.includes('PROCESSING_MEDIA') && !STEPS.includes('EDIT_BUTTON_HIDDEN')) {
         hideTwitterEditButtons(editButtons);
-        STEPS.push('EDIT_BUTTON_HIDDEN');
+        if (editButtons.length === ORDER.length) {
+          STEPS.push('EDIT_BUTTON_HIDDEN');
+        }
       }
 
       const submitButton = grabTwitterSubmitButton();
