@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SONAAR: Add alts</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 300px;
+        height: 200px;
+      }
+
+      .container {
+        padding: 1em;
+      }
+
+      .bold {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>SONAAR: Add alts</h1>
+      <div>
+        <p class="bold">Extension is working.</p>
+        <p>Test it by trying to add images on Twitter.</p>
+        <p>Test it by trying to add images on Facebook.</p>
+        <p>Test it in any page with images to retrieve added alt's.</p>
+      </div>
+      <input type="checkbox" id="disableTwitterDialogs"><label for="disableTwitterDialogs">Disable Twitter messages</label>
+      <br>
+      <input type="checkbox" id="disableFacebookDialogs"><label for="disableFacebookDialogs">Disable Facebook messages</label>
+      <br>
+      <br>
+      <div><span class="bold">Keyboard shortcut to analyze current page images:</span> CTRL+ALT+s</div>
+      <br>
+      <button id="analyze-all" type="button">Click to analyze current page images</button>
+      <br>
+      <br>
+      <input type="checkbox" id="forceAltSearch"><label for="forceAltSearch">Analyze images even if they have a non empty alt text ("")</label>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

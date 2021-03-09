@@ -1,0 +1,38 @@
+{
+  "name": "add-alt-extension",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SONAARProject/add-alt-extension.git"
+  },
+  "keywords": [
+    "ally",
+    "extension",
+    "chrome",
+    "image-alt",
+    "alt",
+    "image-description"
+  ],
+  "author": "João Vicente",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SONAARProject/add-alt-extension/issues"
+  },
+  "homepage": "https://github.com/SONAARProject/add-alt-extension#readme",
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/node": "^14.14.32",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.2.3",
+    "webpack": "^5.24.4",
+    "webpack-cli": "^4.5.0"
+  },
+  "dependencies": {
+    "@types/chrome": "^0.0.133"
+  }
+}
