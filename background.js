@@ -29,7 +29,7 @@ function searchImage(img) {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
           chrome.tabs.sendMessage(tabs[0].id, { type: "checkAltText", img, alts: MOCK[img]?.alts, concepts: MOCK[img]?.concepts });
         });
-      }, 300 * 10);
+      }, 150 * 10);
     }
   });
 }

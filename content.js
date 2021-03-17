@@ -38,12 +38,12 @@ function createDescription(img) {
 function setCURRENT(next) {
   if (next) {
     CURRENT = ORDER[ORDER.indexOf(CURRENT) + 1];
-    while (RESULT[CURRENT].removed) {
+    while (RESULT[CURRENT] && RESULT[CURRENT].removed) {
       CURRENT = ORDER[ORDER.indexOf(CURRENT) + 1];
     }
   } else {
     CURRENT = ORDER[ORDER.indexOf(CURRENT) - 1];
-    while (RESULT[CURRENT].removed) {
+    while (RESULT[CURRENT] && RESULT[CURRENT].removed) {
       CURRENT = ORDER[ORDER.indexOf(CURRENT) - 1];
     }
   }
@@ -186,7 +186,7 @@ function grabTwitterEditButtonsInterface() {
 }
 
 function grabFacebookEditButtonInterface() {
-  return document.querySelector('[class="oajrlxb2 q2y6ezfg gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l beltcj47 p86d2i9g aot14ch1 kzx2olss cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm tv7at329"]');
+  return document.querySelector('[class="oajrlxb2 q2y6ezfg gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l kt9q3ron ak7q8e6j isp2s0ed ri5dt5u2 cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm tv7at329"]');
 }
 
 function hideTwitterAddDescription(element) {
@@ -199,8 +199,17 @@ function showTwitterAddDescription(element) {
 
 function hideTwitterEditButtons(elements) {
   for (const element of elements) {
-    console.log(element);
     element.style["visibility"] = "hidden";
+  }
+}
+
+function grabTwitterImagesThumbnail() {
+  return document.querySelectorAll('img[draggable="false"][class="css-9pa8cd"]');
+}
+
+function preventClickTwitterImagesThumbnail(elements) {
+  for (const element of elements) {
+    element.parentNode.parentNode.style['pointer-events'] = 'none';
   }
 }
 
@@ -238,11 +247,16 @@ function grabTwitterSubmitButton() {
 }
 
 function grabFacebookDescriptionTab() {
-  return document.querySelector('[class="hu5pjgll lzf7d6o1 sp_YSu7W135EnD sx_7f977b"]')?.parentElement?.parentElement?.parentElement?.parentElement;
+  const dialog = document.querySelector('[class="cjfnh4rs l9j0dhe7 du4w35lb j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu cwj9ozl2 io0zqebd m5lcvass fbipl8qg nwvqtn77 nwpbqux9 iy3k6uwz e9a99x49 g8p4j16d bv25afu3"]');
+  if (dialog) {
+    const i = dialog.querySelector(`i[style='background-image: url("https://static.xx.fbcdn.net/rsrc.php/v3/ye/r/yRAV_o3RhfE.png"); background-position: 0px -75px; background-size: auto; width: 24px; height: 24px; background-repeat: no-repeat; display: inline-block;']`);
+    return i?.parentElement?.parentElement?.parentElement?.parentElement;
+  }
+  //return document.querySelector('[class="hu5pjgll lzf7d6o1 sp_YSu7W135EnD sx_7f977b"]')?.parentElement?.parentElement?.parentElement?.parentElement;
 }
 
 function grabFacebookSubmitButton() {
-  return document.querySelector('[class="oajrlxb2 s1i5eluu gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l beltcj47 p86d2i9g aot14ch1 kzx2olss cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm tv7at329"]');
+  return document.querySelector('[class="oajrlxb2 s1i5eluu gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l kt9q3ron ak7q8e6j isp2s0ed ri5dt5u2 cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm tv7at329"]');
 }
 
 function hideAddDescriptionDialog() {
@@ -315,6 +329,11 @@ function showFacebookAlertMessage() {
 
         editButton.removeEventListener('click', hideAddDescriptionDialog, true);
         editButton.addEventListener('click', hideAddDescriptionDialog, true);
+
+        const altFoundDialog = document.getElementById('alt_found_dialog');
+        if (altFoundDialog) {
+          altFoundDialog.remove();
+        }
     
         const span = document.createElement('span');
         span.id = "add_description_dialog";
@@ -348,7 +367,7 @@ function grabTwitterTextarea() {
 }
 
 function grabFacebookSaveButton() {
-  return document.querySelector('[class="oajrlxb2 s1i5eluu gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l beltcj47 p86d2i9g aot14ch1 kzx2olss cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm qypqp5cg"]');
+  return document.querySelector('[class="oajrlxb2 s1i5eluu gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l kt9q3ron ak7q8e6j isp2s0ed ri5dt5u2 cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm qypqp5cg"]');
 }
 
 function descriptionChanged() {
@@ -417,6 +436,10 @@ function hideSaveButtonDialog() {
   if(saveButtonDialog) {
     saveButtonDialog.remove();
   }
+  /*const host = location.host;
+  if (host.includes("twitter.com")) {
+    
+  }*/
   saveButtonClicked();
 }
 
@@ -522,7 +545,7 @@ function insertTwitterDescription(textarea) {
     textarea.removeEventListener("keyup", descriptionChanged, true);
     textarea.addEventListener("keyup", descriptionChanged, true);
 
-    if (RESULT[CURRENT].show_paste_dialog) {
+    if (RESULT[CURRENT] && RESULT[CURRENT].show_paste_dialog) {
       const clientRect = textarea.getBoundingClientRect();
       
       textarea.removeEventListener("paste", hidePasteDialog, true);
@@ -561,41 +584,41 @@ function insertFacebookDescription(textarea) {
 
   textarea.removeEventListener("keyup", descriptionChanged, true);
   textarea.addEventListener("keyup", descriptionChanged, true);
+  
+  if (RESULT[CURRENT] && RESULT[CURRENT].show_paste_dialog) {
+    const radioButtons = document.querySelectorAll('[class="oajrlxb2 rq0escxv f1sip0of hidtqoto nhd2j8a9 datstx6m kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x b5wmifdl lzcic4wl jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso pmk7jnqg j9ispegn kr520xx4 k4urcfbm"]');
+    if (radioButtons.length > 0) {
+      radioButtons[1].click();
 
-  if (RESULT[CURRENT].show_paste_dialog) {
-    const radioButton = document.querySelector('[class="oajrlxb2 rq0escxv f1sip0of hidtqoto nhd2j8a9 datstx6m kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x b5wmifdl lzcic4wl jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso pmk7jnqg j9ispegn kr520xx4 k4urcfbm"]');
-    if (radioButton) {
-      radioButton.click();
+      const clientRect = textarea.getBoundingClientRect();
+
+      textarea.removeEventListener("paste", hidePasteDialog, true);
+      textarea.addEventListener("paste", hidePasteDialog, true);
+      textarea.focus();
+
+      chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+        if (!item.disableFacebookDialogs) {
+          const span = document.createElement('span');
+          span.id = "paste_dialog";
+          span.innerHTML = `<== Paste here the description<br> and then edit it to be as correct as possible.`;
+          span.style.backgroundColor = "white";
+          span.style.color = "black";
+          span.style.border = "thin solid black";
+          span.style.fontSize = "1.5em";
+          span.style.position = "fixed";
+          span.style.padding = "0.5em";
+          span.style.top = clientRect.top + "px";
+          span.style.left = (clientRect.left + clientRect.width + 15) + "px";
+          span.style.zIndex = "100";
+          span.style.cursor = "pointer";
+          span.addEventListener("click", function() {
+            span.remove();
+          });
+          document.body.appendChild(span);
+        }
+      });
+      RESULT[CURRENT].show_paste_dialog = false;
     }
-
-    const clientRect = textarea.getBoundingClientRect();
-
-    textarea.removeEventListener("paste", hidePasteDialog, true);
-    textarea.addEventListener("paste", hidePasteDialog, true);
-    textarea.focus();
-
-    chrome.storage.sync.get("disableFacebookDialogs", function(item) {
-      if (!item.disableFacebookDialogs) {
-        const span = document.createElement('span');
-        span.id = "paste_dialog";
-        span.innerHTML = `<== Paste here the description<br> and then edit it to be as correct as possible.`;
-        span.style.backgroundColor = "white";
-        span.style.color = "black";
-        span.style.border = "thin solid black";
-        span.style.fontSize = "1.5em";
-        span.style.position = "fixed";
-        span.style.padding = "0.5em";
-        span.style.top = clientRect.top + "px";
-        span.style.left = (clientRect.left + clientRect.width + 15) + "px";
-        span.style.zIndex = "100";
-        span.style.cursor = "pointer";
-        span.addEventListener("click", function() {
-          span.remove();
-        });
-        document.body.appendChild(span);
-      }
-    });
-    RESULT[CURRENT].show_paste_dialog = false;
   }
 }
 
@@ -638,15 +661,84 @@ function handleFacebookDescriptionTab(descriptionTab) {
 }
 
 function grabFacebookTextarea() {
-  return document.querySelector('[class="oajrlxb2 rq0escxv f1sip0of hidtqoto lzcic4wl g5ia77u1 gcieejh5 bn081pho humdl8nn izx4hr6d oo9gr5id j83agx80 jagab5yi knj5qynh fo6rh5oj oud54xpy l9qdfxac ni8dbmo4 stjgntxs hv4rvrfc dati1w0a ieid39z1 k4urcfbm"]');
+  const textareas = document.querySelectorAll('[rows="1"][class="oajrlxb2 rq0escxv f1sip0of hidtqoto lzcic4wl g5ia77u1 gcieejh5 bn081pho humdl8nn izx4hr6d oo9gr5id j83agx80 jagab5yi knj5qynh fo6rh5oj oud54xpy l9qdfxac ni8dbmo4 stjgntxs hv4rvrfc dati1w0a ieid39z1 k4urcfbm"]');
+  for (const textarea of textareas) {
+    const parent = textarea?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement?.parentElement;
+    if (parent) {
+      const radioButton = parent.querySelector('input[type="radio"]');
+      if (radioButton) {
+        return textarea;
+      }
+    }
+  }
+  return null;
+}
+
+function grabFacebookConcludeButton() {
+  const dialog = document.querySelector('[class="cjfnh4rs l9j0dhe7 du4w35lb j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu cwj9ozl2 io0zqebd m5lcvass fbipl8qg nwvqtn77 nwpbqux9 iy3k6uwz e9a99x49 g8p4j16d bv25afu3"]');
+  if (dialog) {
+    return dialog.querySelector('[class="oajrlxb2 s1i5eluu gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys tkv8g59h qt6c0cv9 fl8dtwsd i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l kt9q3ron ak7q8e6j isp2s0ed ri5dt5u2 cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm tv7at329"]');
+  }
+  return null;
+}
+
+function dismissFacebookConcludeDialog() {
+  const spanExists = document.getElementById('conclude_button_dialog');
+  if (spanExists) {
+    spanExists.remove();
+  }
+}
+
+function handleFacebookConcludeButton(button) {
+  chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+    if (!item.disableFacebookDialogs) {
+      button.removeEventListener('click', dismissFacebookConcludeDialog, true);
+      button.addEventListener('click', dismissFacebookConcludeDialog, true);
+      const spanExists = document.getElementById('conclude_button_dialog');
+      if (!spanExists) {
+        const clientRect = button.getBoundingClientRect();
+        const span = document.createElement('span');
+        span.id = "conclude_button_dialog";
+        span.innerHTML = `Click the "${button.textContent}" button above to conclude the post.`;
+        span.style.backgroundColor = "white";
+        span.style.color = "black";
+        span.style.border = "thin solid black";
+        span.style.fontSize = "1.5em";
+        span.style.position = "fixed";
+        span.style.padding = "0.5em";
+        span.style.top = (clientRect.top + clientRect.height + 10) + "px";
+        span.style.left = (clientRect.left) + "px";
+        span.style.zIndex = "100";
+        span.style.cursor = "pointer";
+        span.addEventListener("click", function() {
+          span.remove();
+        });
+        document.body.appendChild(span);
+      }
+    }
+  });
 }
 
 function grabTwitterPreviousImageButton() {
-  return document.querySelector('[class="css-18t94o4 css-1dbjc4n r-1niwhzg r-p1n3y5 r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-a5pmau r-15ysp7h r-4wgw6l r-1ny4l3l r-mk0yit r-o7ynqc r-6416eg r-lrvibr"]');
+  const div = document.querySelectorAll('[class="css-1dbjc4n r-6koalj r-18u37iz"]');
+  if (div.length === 2) {
+    const buttons = div[1].querySelectorAll('div[role="button"]');
+    return buttons[0];
+  }
+
+  return null;
+  //return document.querySelector('[class="css-18t94o4 css-1dbjc4n r-1niwhzg r-p1n3y5 r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-a5pmau r-15ysp7h r-4wgw6l r-1ny4l3l r-mk0yit r-o7ynqc r-6416eg r-lrvibr"]');
 }
 
 function grabTwitterNextImageButton() {
-  return document.querySelector('[class="css-18t94o4 css-1dbjc4n r-1niwhzg r-p1n3y5 r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-15ysp7h r-4wgw6l r-1ny4l3l r-mk0yit r-o7ynqc r-6416eg r-lrvibr"]');
+  const div = document.querySelectorAll('[class="css-1dbjc4n r-6koalj r-18u37iz"]');
+  if (div.length === 2) {
+    const buttons = div[1].querySelectorAll('div[role="button"]');
+    return buttons[1];
+  }
+
+  return null;
+  //return document.querySelector('[class="css-18t94o4 css-1dbjc4n r-1niwhzg r-p1n3y5 r-sdzlij r-1phboty r-rs99b7 r-1w2pmg r-15ysp7h r-4wgw6l r-1ny4l3l r-mk0yit r-o7ynqc r-6416eg r-lrvibr"]');
 }
 
 function grabTwitterSaveButton() {
@@ -661,8 +753,40 @@ function grabTwitterSaveButton() {
 }
 
 function saveButtonClicked() {
-  if (RESULT[CURRENT] && RESULT[CURRENT].text && RESULT[CURRENT].text.trim()) {
-    STEPS.push('DESCRIPTION_SAVED');
+  const host = location.host;
+  if (host.includes("twitter.com")) {
+    if (RESULT[CURRENT] && RESULT[CURRENT].text && RESULT[CURRENT].text.trim()) {
+      STEPS.push('DESCRIPTION_SAVED');
+    }
+  } else if (host.includes("facebook.com")) {
+    if (doAllImagesHaveAltText()) {
+      STEPS.push('DESCRIPTION_SAVED');
+      setTimeout(() => {
+        const button = grabFacebookConcludeButton();
+        if (button) {
+          handleFacebookConcludeButton(button);
+        }
+      }, 800);
+    } else {
+      setTimeout(() => {
+        setCURRENT(true);
+        const dtIndex = STEPS.indexOf('DESCRIPTION_TAB');
+        if (dtIndex !== -1) {
+          STEPS.splice(dtIndex, 1);
+        }
+        const daIndex = STEPS.indexOf('DESCRIPTION_ADDED');
+        if (daIndex !== -1) {
+          STEPS.splice(daIndex, 1);
+        }
+        const dialog = document.querySelector('[class="cjfnh4rs l9j0dhe7 du4w35lb j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu cwj9ozl2 io0zqebd m5lcvass fbipl8qg nwvqtn77 nwpbqux9 iy3k6uwz e9a99x49 g8p4j16d bv25afu3"]');
+        if (dialog) {
+          const images = dialog.querySelectorAll('[class="k4urcfbm stjgntxs ni8dbmo4 taijpn5t datstx6m j83agx80 bp9cbjyn"]');
+          if (images.length > 0) {
+            showFacebookClickEditButtonDialog(images[ORDER.indexOf(CURRENT)]);
+          }
+        }
+      }, 500);
+    }
   }
 }
 
@@ -674,6 +798,70 @@ function handleTwitterSaveButton(saveButton) {
 function handleFacebookSaveButton(saveButton) {
   saveButton.removeEventListener('click', saveButtonClicked, true);
   saveButton.addEventListener('click', saveButtonClicked, true);
+}
+
+function handleFacebookEditButtonDialog() {
+  setTimeout(() => {
+    const spanExists = document.getElementById('click_edit_dialog');
+    if (spanExists) {
+      spanExists.remove();
+    }
+  }, 700);
+}
+
+function grabFacebookEditButton() {
+  const divs = document.querySelectorAll('[class="ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi ad9n1n66 sjgh65i0 ni8dbmo4 stjgntxs l9j0dhe7"]');
+  const div = divs[ORDER.indexOf(CURRENT)];
+  if (div) {
+    const button = div.querySelector('[class="oajrlxb2 q2y6ezfg gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l kt9q3ron ak7q8e6j isp2s0ed ri5dt5u2 cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm tv7at329"]');
+    if (button) {
+      button.removeEventListener("click", handleFacebookEditButtonDialog, true);
+      button.addEventListener("click", handleFacebookEditButtonDialog, true);
+    }
+  }
+}
+
+function showFacebookClickEditButtonDialog(image) {
+  chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+    if (!item.disableFacebookDialogs) {
+      const spanExists = document.getElementById('click_edit_dialog');
+      //console.log(spanExists);
+      if (!spanExists) {
+        const clientRect = image.getBoundingClientRect();
+        const span = document.createElement('span');
+        span.id = "click_edit_dialog";
+        span.innerHTML = `Hover the image,<br>then click the "Edit" button. ==>`;
+        span.style.backgroundColor = "white";
+        span.style.color = "black";
+        span.style.border = "thin solid black";
+        span.style.fontSize = "1.5em";
+        span.style.position = "fixed";
+        span.style.top = (clientRect.top) + "px";
+        span.style.left = (clientRect.left - 250) + "px";
+        span.style.zIndex = "100";
+        span.style.cursor = "pointer";
+        span.addEventListener("click", function() {
+          span.remove();
+        });
+        document.body.appendChild(span);
+      }
+    }
+  });
+}
+
+function startFacebookMultipleImageWorkflow() {
+  if (!STEPS.includes('FACEBOOK_WORKFLOW')) {
+    setTimeout(() => {
+      const dialog = document.querySelector('[class="cjfnh4rs l9j0dhe7 du4w35lb j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu cwj9ozl2 io0zqebd m5lcvass fbipl8qg nwvqtn77 nwpbqux9 iy3k6uwz e9a99x49 g8p4j16d bv25afu3"]');
+      if (dialog) {
+        const images = dialog.querySelectorAll('[class="k4urcfbm stjgntxs ni8dbmo4 taijpn5t datstx6m j83agx80 bp9cbjyn"]');
+        if (images.length > 0) {
+          showFacebookClickEditButtonDialog(images[ORDER.indexOf(CURRENT)]);
+          STEPS.push('FACEBOOK_WORKFLOW');
+        }
+      }
+    }, 300);
+  }
 }
 
 function submitImages() {
@@ -750,16 +938,20 @@ function showFacebookAltMessage() {
     if (!item.disableFacebookDialogs) {
       const span = document.createElement('span');
       span.id = "alt_found_dialog";
-      span.innerHTML = `
-        We found a possible description for this image<br> and copied it to the clipboard. <br> Please click the "${editButton.textContent}" button to add it. ==>
-      `;
+      if (COUNTER === 1) {
+        span.innerHTML = `We found a possible description for this image<br> and copied it to the clipboard.<br> Please click the "${editButton.textContent}" button to add it. ==>`;
+        span.style.top = (clientRect.top - 40) + "px";
+        span.style.left = (clientRect.left - 380) + "px";
+      } else {
+        span.innerHTML = `We found possible descriptions for these images<br> Please click the "${editButton.textContent}" button to add them. ==>`;
+        span.style.top = (clientRect.top - 20) + "px";
+        span.style.left = (clientRect.left - 440) + "px";
+      }
       span.style.backgroundColor = "white";
       span.style.color = "black";
       span.style.border = "thin solid black";
       span.style.fontSize = "1.5em";
       span.style.position = "fixed";
-      span.style.top = (clientRect.top - 40) + "px";
-      span.style.left = (clientRect.left - 380) + "px";
       span.style.zIndex = "100";
       span.style.cursor = "pointer";
       span.addEventListener("click", function() {
@@ -890,6 +1082,14 @@ function initTwitterSupport() {
         }
       }
 
+      const thumbnails = grabTwitterImagesThumbnail();
+      if (thumbnails.length > 0 && STEPS.includes('PROCESSING_MEDIA') && !STEPS.includes('THUMBNAILS_HIDDEN')) {
+        preventClickTwitterImagesThumbnail(thumbnails);
+        if (thumbnails.length === ORDER.length) {
+          STEPS.push('THUMBNAILS_HIDDEN');
+        }
+      }
+
       const submitButton = grabTwitterSubmitButton();
       if (submitButton && STEPS.includes('IMAGE_RESULT') && !STEPS.includes('DESCRIPTION_SAVED')) {
         handleTwitterAlertMessage(submitButton);
@@ -985,16 +1185,22 @@ function initFacebookSupport() {
 
       const textarea = grabFacebookTextarea();
       if (textarea && STEPS.includes('IMAGE_RESULT') && !STEPS.includes('DESCRIPTION_SAVED')) {
-        insertFacebookDescription(textarea);
-        if (!STEPS.includes('DESCRIPTION_ADDED')) {
-          STEPS.push('DESCRIPTION_ADDED');
-        }
+        setTimeout(() => {
+          insertFacebookDescription(textarea);
+          if (!STEPS.includes('DESCRIPTION_ADDED')) {
+            STEPS.push('DESCRIPTION_ADDED');
+          }
+        }, 500);
       }
 
-      const saveButton = grabFacebookSaveButton();
+      /*const saveButton = grabFacebookSaveButton();
       if (saveButton && STEPS.includes('DESCRIPTION_ADDED')) {
+        console.log(saveButton)
         handleFacebookSaveButton(saveButton);
-      }
+      }*/
+
+      startFacebookMultipleImageWorkflow();
+      grabFacebookEditButton();
 
       const submitButton = grabFacebookSubmitButton();
       if (submitButton && STEPS.includes('IMAGE_RESULT') && !STEPS.includes('DESCRIPTION_SAVED')) {
