@@ -5,10 +5,7 @@
   "description": "This extension allows to add an alt text when posting images in social media.",
   "short_name": "sonaar-add-alts",
   "permissions": [
-    "activeTab",
-    "declarativeContent",
     "storage",
-    "webNavigation",
     "unlimitedStorage",
     "https://accessible-serv.lasige.di.fc.ul.pt/sonaar/*"
   ],
