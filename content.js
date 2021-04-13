@@ -1060,7 +1060,7 @@ function addImageAlts(id, _alts) {
   if (_alts) {
     const alts = JSON.parse(_alts);
     if (img.attributes["alt"] === undefined) {
-      img.setAttribute("alt", alts[0].AltText.trim() /*.map(a => a.AltText).join("; ")*/);
+      img.setAttribute("alt", alts[0].AltText.trim());
       img.setAttribute('tabindex', 0);
 
       const data = {
@@ -1083,9 +1083,9 @@ function addImageAlts(id, _alts) {
       img.setAttribute("alt", img.getAttribute("alt") + "; " + alts[0].AltText.trim());
       img.setAttribute('tabindex', 0);
     }
-    img.setAttribute("_add_alt_extension_message", "All alt's found in database were added.");
+    img.setAttribute("_add_alt_extension_message", "An alt was found in database and it was added.");
   } else {
-    img.setAttribute("_add_alt_extension_message", "No alt found in database.");
+    img.setAttribute("_add_alt_extension_message", "No alt was found in the database.");
   }
 }
 
