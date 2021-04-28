@@ -27,7 +27,7 @@ function searchImage(img, lang) {
           
           if (response.status !== 4) {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-              chrome.tabs.sendMessage(tabs[0].id, { type: "checkAltText", img, alts: response?.alts, concepts: response?.concepts });
+              chrome.tabs.sendMessage(tabs[0].id, { type: "checkAltText", img, alts: response?.alts, concepts: response?.concepts, text: response?.text });
             });
           }
         }
@@ -43,7 +43,7 @@ function searchImage(img, lang) {
   });
 }
 
-function submitImage(img, text) {
+function submitImage(img, lang, text, postText) {
   chrome.storage.local.get(img, function(data) {
     if(typeof data[img] === "undefined") {
       console.log('No data')
@@ -57,7 +57,7 @@ function submitImage(img, text) {
         }
       }
 
-      http.send("imageBuffer=" + data[img] + "&altText=" + encodeURIComponent(text));
+      http.send("imageBuffer=" + data[img] + "&lang=" + parseLang(lang) + "&altText=" + encodeURIComponent(text) + "&postText=" + encodeURIComponent(postText));
     }
   });
 }
@@ -89,7 +89,7 @@ chrome.runtime.onMessage.addListener(
         searchByUrl(message.url, message.lang, message.id);
         break;
       case "submit":
-        submitImage(message.img, message.text);
+        submitImage(message.img, message.lang, message.text, message.postText);
         break;
       default:
         console.log("default message");

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>SONAAR: Add alts</title>
+    <meta charset="utf-8">
     <style>
       html, body {
         margin: 0;
@@ -20,7 +21,7 @@
     </style>
   </head>
   <body>
-    <div class="container">
+    <div id="en" class="container">
       <h1>SONAAR: Add alts</h1>
       <div>
         <p class="bold">Extension is working.</p>
@@ -41,6 +42,42 @@
       <br>
       <br>
       <input type="checkbox" id="forceAltSearch"><label for="forceAltSearch">Analyze images even if they have a non empty alt text ("")</label>
+      <br>
+      <br>
+      <label for="lang">Choose language:</label>
+      <select id="lang" class="choose_lang">
+        <option value="en">English</option>
+        <option value="pt">Português</option>
+      </select>
+    </div>
+    <div id="pt" class="container">
+      <h1>SONAAR: Add alts</h1>
+      <div>
+        <p class="bold">A extensão está a funcionar</p>
+        <p>Teste-a adicionando imagens no Twiteer.</p>
+        <p>Teste-a adicionando imagens no Facebook.</p>
+        <p>Teste-a em qualquer página, obtendo as descrições para qualquer imagem.</p>
+      </div>
+      <input type="checkbox" id="disableTwitterDialogs2"><label for="disableTwitterDialogs2">Desativar messagens no Twitter</label>
+      <br>
+      <input type="checkbox" id="disableFacebookDialogs2"><label for="disableFacebookDialogs2">Desativar messagens no Facebook</label>
+      <br>
+      <br>
+      <div><span class="bold">Atalho de teclado para analizar a imagem focada:</span> CTRL+ALT+i</div>
+      <br>
+      <div><span class="bold">Atalho de teclado para analizar todas as imagens atuais da página:</span> CTRL+ALT+s</div>
+      <br>
+      <button id="analyze-all" type="button">Carregue para analizar as imagens atuais da página</button>
+      <br>
+      <br>
+      <input type="checkbox" id="forceAltSearch2"><label for="forceAltSearch2">Analizar imagens mesmo que não tenham o `alt` vazio</label>
+      <br>
+      <br>
+      <label for="lang2">Escolher língua:</label>
+      <select id="lang2" class="choose_lang">
+        <option value="en">English</option>
+        <option value="pt">Português</option>
+      </select>
     </div>
     <script src="popup.js"></script>
   </body>

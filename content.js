@@ -28,8 +28,27 @@ function delayCleanStepsProcess() {
 }
 
 function createDescription(img) {
-  const description = !RESULT[img].alts ? "The image may contain these concepts: " + RESULT[img].concepts : RESULT[img].alts[0].AltText.trim();
-  RESULT[img].description = description;
+  chrome.storage.sync.get("lang", function(item) {
+    if (item.lang === 'pt') {
+      const description =
+        !RESULT[img].alts ?
+          (RESULT[img].imageText ? pt.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') +
+        
+          pt.twitter.description.concepts + RESULT[img].concepts : 
+          RESULT[img].alts[0].AltText.trim();
+
+      RESULT[img].description = description;
+    } else {
+      const description =
+        !RESULT[img].alts ?
+          (RESULT[img].imageText ? en.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') +
+        
+          en.twitter.description.concepts + RESULT[img].concepts : 
+          RESULT[img].alts[0].AltText.trim();
+
+      RESULT[img].description = description;
+    }
+  });
 }
 
 function setCURRENT(next) {
@@ -286,7 +305,13 @@ function showTwitterAlertMessage() {
         
         const span = document.createElement('span');
         span.id = "add_description_dialog";
-        span.innerHTML = `<== Try to add a description<br> by clicking the "${addDescription.textContent}" button.`;
+        chrome.storage.sync.get("lang", function(item) {
+          if (item.lang === 'pt') {
+            span.innerHTML = pt.twitter.alert_message.replace("{value}", addDescription.textContent);
+          } else {
+            span.innerHTML = en.twitter.alert_message.replace("{value}", addDescription.textContent);
+          }
+        });
         span.style.backgroundColor = "white";
         span.style.color = "black";
         span.style.border = "thin solid black";
@@ -334,7 +359,13 @@ function showFacebookAlertMessage() {
     
         const span = document.createElement('span');
         span.id = "add_description_dialog";
-        span.innerHTML = `Try to add a description by clicking the "${editButton.textContent}" button. ==>`;
+        chrome.storage.sync.get("lang", function(item) {
+          if (item.lang === 'pt') {
+            span.innerHTML = pt.facebook.alert_message.replace('{value}', editButton.textContent);
+          } else {
+            span.innerHTML = en.facebook.alert_message.replace('{value}', editButton.textContent);
+          }
+        });
         span.style.backgroundColor = "white";
         span.style.color = "black";
         span.style.border = "thin solid black";
@@ -416,7 +447,13 @@ function showTwitterCycleImageButtonDialog() {
         const clientRect = saveButton.getBoundingClientRect();
         const span = document.createElement("span");
         span.id = "cycle_images_dialog";
-        span.innerHTML = `Click the arrows buttons below to add the descriptions to the other images.`;
+        chrome.storage.sync.get("lang", function(item) {
+          if (item.lang === 'pt') {
+            span.innerHTML = pt.twitter.cycle_arrows;
+          } else {
+            span.innerHTML = en.twitter.cycle_arrows;
+          }
+        });
         span.style.backgroundColor = "white";
         span.style.color = "black";
         span.style.border = "thin solid black";
@@ -457,7 +494,13 @@ function showTwitterSaveButtonDialog(saveButton) {
       const clientRect = saveButton.getBoundingClientRect();
       const span = document.createElement("span");
       span.id = "save_dialog";
-      span.innerHTML = `<== Don't forget to apply the changes by clicking the "${saveButton.textContent}" button.`;
+      chrome.storage.sync.get("lang", function(item) {
+        if (item.lang === 'pt') {
+          span.innerHTML = pt.twitter.save_button.replace('{value}', saveButton.textContent);
+        } else {
+          span.innerHTML = en.twitter.save_button.replace('{value}', saveButton.textContent);
+        }
+      });
       span.style.backgroundColor = "white";
       span.style.color = "black";
       span.style.border = "thin solid black";
@@ -485,7 +528,13 @@ function showFacebookSaveButtonDialog(saveButton) {
       const clientRect = saveButton.getBoundingClientRect();
       const span = document.createElement("span");
       span.id = "save_dialog";
-      span.innerHTML = `Don't forget to apply the changes by clicking the "${saveButton.textContent}" button above.`;
+      chrome.storage.sync.get("lang", function(item) {
+        if (item.lang === 'pt') {
+          span.innerHTML = pt.facebook.save_button.replace('{value}', saveButton.textContent);
+        } else {
+          span.innerHTML = en.facebook.save_button.replace('{value}', saveButton.textContent);
+        }
+      });
       span.style.backgroundColor = "white";
       span.style.color = "black";
       span.style.border = "thin solid black";
@@ -536,7 +585,6 @@ function hidePasteDialog() {
     } else if (host.includes("facebook.com")) {
       const saveButton = grabFacebookSaveButton();
       if (saveButton) {
-        console.log(saveButton);
         showFacebookSaveButtonDialog(saveButton);
       }
     }
@@ -570,7 +618,13 @@ function insertTwitterDescription(textarea) {
           span.style.zIndex = "100";
 
           if (!RESULT[CURRENT].alts) {
-            span.innerHTML = `<== Paste here the description<br> and then edit it to be as correct as possible.`;
+            chrome.storage.sync.get("lang", function(item) {
+              if (item.lang === 'pt') {
+                span.innerHTML = pt.twitter.paste_message;
+              } else {
+                span.innerHTML = en.twitter.paste_message;
+              }
+            });
             span.style.cursor = "pointer";
             span.addEventListener("click", function() {
               span.remove();
@@ -579,8 +633,13 @@ function insertTwitterDescription(textarea) {
           } else {
             span.style.top = (clientRect.top - 500) + "px";
             const p = document.createElement("p");
-            p.innerHTML = "We found potential descriptions for this image.\n Copy and paste the descriptions that best fit the image\n and then edit it to be as accurate as possible."
-
+            chrome.storage.sync.get("lang", function(item) {
+              if (item.lang === 'pt') {
+                p.innerHTML = pt.twitter.alts_list_message;
+              } else {
+                p.innerHTML = en.twitter.alts_list_message;
+              }
+            });
             span.appendChild(p);
             span.appendChild(document.createElement('hr'));
 
@@ -636,7 +695,13 @@ function insertFacebookDescription(textarea) {
         if (!item.disableFacebookDialogs) {
           const span = document.createElement('span');
           span.id = "paste_dialog";
-          span.innerHTML = `<== Paste here the description<br> and then edit it to be as correct as possible.`;
+          chrome.storage.sync.get("lang", function(item) {
+            if (item.lang === 'pt') {
+              span.innerHTML = pt.facebook.paste_message;
+            } else {
+              span.innerHTML = en.facebook.paste_message;
+            }
+          });
           span.style.backgroundColor = "white";
           span.style.color = "black";
           span.style.border = "thin solid black";
@@ -671,7 +736,13 @@ function showFacebookDescriptionTabDialog(descriptionTab) {
       const clientRect = descriptionTab.getBoundingClientRect();
       const span = document.createElement('span');
       span.id = "description_tab_dialog";
-      span.innerHTML = `<== Click the "${descriptionTab.textContent}" button to add a description.`;
+      chrome.storage.sync.get("lang", function(item) {
+        if (item.lang === 'pt') {
+          span.innerHTML = pt.facebook.description_tab.replace("{value}", descriptionTab.textContent);
+        } else {
+          span.innerHTML = en.facebook.description_tab.replace("{value}", descriptionTab.textContent);
+        }
+      });
       span.style.backgroundColor = "white";
       span.style.color = "black";
       span.style.border = "thin solid black";
@@ -735,7 +806,13 @@ function handleFacebookConcludeButton(button) {
         const clientRect = button.getBoundingClientRect();
         const span = document.createElement('span');
         span.id = "conclude_button_dialog";
-        span.innerHTML = `Click the "${button.textContent}" button above to conclude the post.`;
+        chrome.storage.sync.get("lang", function(item) {
+          if (item.lang === 'pt') {
+            span.innerHTML = pt.facebook.conclude_button.replace("{value}", descriptionTab.textContent);
+          } else {
+            span.innerHTML = en.facebook.conclude_button.replace("{value}", descriptionTab.textContent);
+          }
+        });
         span.style.backgroundColor = "white";
         span.style.color = "black";
         span.style.border = "thin solid black";
@@ -861,12 +938,17 @@ function showFacebookClickEditButtonDialog(image) {
   chrome.storage.sync.get("disableFacebookDialogs", function(item) {
     if (!item.disableFacebookDialogs) {
       const spanExists = document.getElementById('click_edit_dialog');
-      //console.log(spanExists);
       if (!spanExists) {
         const clientRect = image.getBoundingClientRect();
         const span = document.createElement('span');
         span.id = "click_edit_dialog";
-        span.innerHTML = `Hover the image,<br>then click the "Edit" button. ==>`;
+        chrome.storage.sync.get("lang", function(item) {
+          if (item.lang === 'pt') {
+            span.innerHTML = pt.facebook.hover_image;
+          } else {
+            span.innerHTML = en.facebook.hover_image;
+          }
+        });
         span.style.backgroundColor = "white";
         span.style.color = "black";
         span.style.border = "thin solid black";
@@ -900,10 +982,16 @@ function startFacebookMultipleImageWorkflow() {
   }
 }
 
+function grabTwitterPostText() {
+  const textbox = document.querySelector('[data-testid="tweetTextarea_0"]');
+  return textbox?.textContent ?? '';
+}
+
 function submitImages() {
+  const postText = grabTwitterPostText();
   for (const img in RESULT) {
     if (RESULT[img].text) {
-      chrome.runtime.sendMessage({type: "submit", img, lang: navigator.language, text: RESULT[img].text });
+      chrome.runtime.sendMessage({type: "submit", img, lang: navigator.language, text: RESULT[img].text, postText });
     }
   }
   cleanStepsProcess();
@@ -932,11 +1020,21 @@ function showTwitterAltMessage() {
     if (!item.disableTwitterDialogs) {
       const span = document.createElement('span');
       span.id = "alt_found_dialog";
-      if (COUNTER === 1) {
-        span.innerHTML = `<== We found a possible description for this image and copied it to the clipboard.<br> Please click the "${addDescription.textContent}" button to add it.`;
-      } else {
-        span.innerHTML = `<== We found possible descriptions for these images<br> Please click the "${addDescription.textContent}" button to add them.`;
-      }
+      chrome.storage.sync.get("lang", function(item2) {
+        if (item2.lang === 'pt') {
+          if (COUNTER === 1) {
+            span.innerHTML = pt.twitter.alt_found.s.replace('{value}', addDescription.textContent);
+          } else {
+            span.innerHTML = pt.twitter.alt_found.p.replace('{value}', addDescription.textContent);
+          }
+        } else {
+          if (COUNTER === 1) {
+            span.innerHTML = en.twitter.alt_found.s.replace('{value}', addDescription.textContent);
+          } else {
+            span.innerHTML = en.twitter.alt_found.p.replace('{value}', addDescription.textContent);
+          }
+        }
+      });
       span.style.backgroundColor = "white";
       span.style.color = "black";
       span.style.border = "thin solid black";
@@ -965,15 +1063,29 @@ function showFacebookAltMessage() {
     if (!item.disableFacebookDialogs) {
       const span = document.createElement('span');
       span.id = "alt_found_dialog";
-      if (COUNTER === 1) {
-        span.innerHTML = `We found a possible description for this image<br> and copied it to the clipboard.<br> Please click the "${editButton.textContent}" button to add it. ==>`;
-        span.style.top = (clientRect.top - 40) + "px";
-        span.style.left = (clientRect.left - 380) + "px";
-      } else {
-        span.innerHTML = `We found possible descriptions for these images<br> Please click the "${editButton.textContent}" button to add them. ==>`;
-        span.style.top = (clientRect.top - 20) + "px";
-        span.style.left = (clientRect.left - 440) + "px";
-      }
+      chrome.storage.sync.get("lang", function(item) {
+        if (item.lang === 'pt') {
+          if (COUNTER === 1) {
+            span.innerHTML = pt.facebook.alt_found.s.replace('{value}', editButton.textContent);
+            span.style.top = (clientRect.top - 40) + "px";
+            span.style.left = (clientRect.left - 380) + "px";
+          } else {
+            span.innerHTML = pt.facebook.alt_found.p.replace('{value}', editButton.textContent);
+            span.style.top = (clientRect.top - 20) + "px";
+            span.style.left = (clientRect.left - 440) + "px";
+          }
+        } else {
+          if (COUNTER === 1) {
+            span.innerHTML = en.facebook.alt_found.s.replace('{value}', editButton.textContent);
+            span.style.top = (clientRect.top - 40) + "px";
+            span.style.left = (clientRect.left - 380) + "px";
+          } else {
+            span.innerHTML = en.facebook.alt_found.p.replace('{value}', editButton.textContent);
+            span.style.top = (clientRect.top - 20) + "px";
+            span.style.left = (clientRect.left - 440) + "px";
+          }
+        }
+      });
       span.style.backgroundColor = "white";
       span.style.color = "black";
       span.style.border = "thin solid black";
@@ -1001,10 +1113,11 @@ function getImageUrl(image) {
   }
 }
 
-function handlePostImagesData(img, _alts, _concepts) {
+function handlePostImagesData(img, _alts, _concepts, _imageText) {
   const alts = _alts ? JSON.parse(_alts) : undefined;
   const concepts = _concepts ? JSON.parse(_concepts) : undefined;
-  RESULT[img] = { alts, concepts, show_paste_dialog: true };
+  const imageText = _imageText ? JSON.parse(_imageText) : undefined;
+  RESULT[img] = { alts, concepts, imageText, show_paste_dialog: true };
 
   createDescription(img);
 
@@ -1037,21 +1150,49 @@ function analyzeAll(force = false) {
   }
 }
 
+let activeElement = null;
+let dialogElement = null;
+
 function analyzeOne() {
   const img = document.activeElement;
   const alt_id = img.getAttribute('_add_alt_extension_id');
   if (alt_id) {
     const data = JSON.parse(sessionStorage.getItem(alt_id));
-    data.counter++;
-    const alt = data.alts.split(';')[data.counter];
-    if (alt) {
-      if (data.hasAlt) {
-        img.setAttribute('alt', data.oldAlt + "; " + alt.trim());
+    const alts = data.alts.split(';');
+
+    activeElement = document.activeElement;
+
+    const dialog = document.createElement('div');
+    dialog.setAttribute('_alts_for_image', alt_id);
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('tabindex', 0);
+    dialog.style.position = "fixed";
+    dialog.style.zIndex = "100";
+    dialog.style.backgroundColor = "white";
+    dialog.style.color = "black";
+    dialog.style.border = "thin solid black";
+    dialog.style.fontSize = "1.5em";
+    dialog.style.top = "100px";
+    dialog.style.left = "100px";
+    dialog.style.padding = "1em";
+    chrome.storage.sync.get("lang", function(item) {
+      if (item.lang === 'pt') {
+        dialog.innerText = pt.insert_alts_description;
       } else {
-        img.setAttribute('alt', alt.trim());
+        dialog.innerText = en.insert_alts_description;
       }
-    }
-    sessionStorage.setItem(alt_id, JSON.stringify(data));
+
+      for (const alt of alts ?? []) {
+        const p = document.createElement('p');
+        p.innerText = alt;
+        dialog.appendChild(p);
+      }
+    });
+
+    activeElement.parentElement.appendChild(dialog);
+    dialog.focus();
+
+    dialogElement = dialog;
   }
 }
 
@@ -1064,18 +1205,13 @@ function addImageAlts(id, _alts) {
       img.setAttribute('tabindex', 0);
 
       const data = {
-        counter: 0,
         alts: alts.map(a => a.AltText.trim()).join("; "),
-        hasAlt: false
       }
 
       sessionStorage.setItem(id, JSON.stringify(data));
     } else {
       const data = {
-        counter: 0,
-        alts: alts.map(a => a.AltText.trim()).join("; "),
-        hasAlt: true,
-        oldAlt: img.getAttribute("alt")
+        alts: alts.map(a => a.AltText.trim()).join("; ")
       }
 
       sessionStorage.setItem(id, JSON.stringify(data));
@@ -1092,7 +1228,7 @@ function addImageAlts(id, _alts) {
 chrome.runtime.onMessage.addListener(
   function(message) {
     if (message.type === "checkAltText") {
-      handlePostImagesData(message.img, message.alts, message.concepts);
+      handlePostImagesData(message.img, message.alts, message.concepts, message.text);
     } else if (message.type === "searchAllByUrl") {
       analyzeAll(message.force);
     } else if (message.type === "altForImage") {
@@ -1281,6 +1417,19 @@ function activateShortcut() {
       });
     } else if (event.ctrlKey && event.altKey && event.key === "i") {
       analyzeOne();
+    } else if (event.key === "Escape") {
+      const active = document.activeElement;
+      if (active.hasAttribute('_alts_for_image')) {
+        active.remove();
+        activeElement.focus();
+        activeElement = null;
+        dialogElement = null;
+      }
+    } else if (event.key === "Tab" || event.shiftKey) {
+      if (dialogElement) {
+        dialogElement.focus();
+        event.preventDefault();
+      }
     }
   });
 }
