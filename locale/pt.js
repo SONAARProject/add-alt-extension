@@ -8,7 +8,7 @@ const pt = {
     cycle_arrows: "Carregue nas setas abaixo para adciionar as descrições às restantes imagens.",
     save_button: "<== Não se esqueça de aplicar as alterações carregando no botão \"{value}\".",
     paste_message: "<== Cole aqui a descrição<br> e a seguir edite-a para ficar a mais correta possível.",
-    alts_list_message: "Encontrámos possíveis descrições para esta imagem.\n Copie e cole as descrições que melhor possam descrever a imagem\n e em seguida edite-as para ficarem o mais correto possivel."
+    alts_list_message: "Encontrámos possíveis descrições para esta imagem.\n Copie e cole as descrições que melhor possam descrever a imagem\n e em seguida edite-as de modo a representar melhor a imagem."
   },
   facebook: {
     alt_found: {

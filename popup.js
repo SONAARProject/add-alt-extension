@@ -11,9 +11,11 @@ chrome.storage.sync.get("lang", function(item) {
   if (item.lang) {
     langSelect.value = langSelect2.value = item.lang;
   } else {
-    langSelect.value = langSelect2 = navigator.language.split('-')[0] === 'pt' ? 'pt' : 'en';
+    langSelect.value = langSelect2.value = navigator.language.split('-')[0] === 'pt' ? 'pt' : 'en';
     chrome.storage.sync.set({ lang: langSelect.value });
   }
+
+  document.body.parentElement.setAttribute('lang', langSelect.value);
 
   if (langSelect.value === 'pt') {
     document.getElementById('en').style.visibility = 'hidden';
@@ -59,6 +61,7 @@ langSelect.addEventListener('change', function() {
   
   document.getElementById(this.value).style.visibility = 'initial';
   document.getElementById(this.value).style.position = 'static';
+  document.body.parentElement.setAttribute('lang', langSelect2.value);
   if (this.value === 'pt') {
     document.getElementById('en').style.visibility = 'hidden';
     document.getElementById('en').style.position = 'absolute';
@@ -75,6 +78,7 @@ langSelect2.addEventListener('change', function() {
   
   document.getElementById(this.value).style.visibility = 'initial';
   document.getElementById(this.value).style.position = 'static';
+  document.body.parentElement.setAttribute('lang', langSelect.value);
   if (this.value === 'pt') {
     document.getElementById('en').style.visibility = 'hidden';
     document.getElementById('en').style.position = 'absolute';
@@ -111,3 +115,11 @@ function analyzeAll() {
 }
 
 document.getElementById('analyze-all').addEventListener('click', analyzeAll);
+
+const buttons = document.getElementsByClassName('report_problem');
+
+for (const button of buttons) {
+  button.addEventListener('click', function() {
+    chrome.runtime.openOptionsPage();
+  });
+}

@@ -30,21 +30,23 @@ function delayCleanStepsProcess() {
 function createDescription(img) {
   chrome.storage.sync.get("lang", function(item) {
     if (item.lang === 'pt') {
-      const description =
-        !RESULT[img].alts ?
+      const description = 
+        (RESULT[img].imageText ? pt.description.text + RESULT[img].imageText.phrases[0] + '\n\n' : '') + pt.description.concepts + RESULT[img].concepts
+        /*!RESULT[img].alts ?
           (RESULT[img].imageText ? pt.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') +
         
           pt.twitter.description.concepts + RESULT[img].concepts : 
-          RESULT[img].alts[0].AltText.trim();
-
+          RESULT[img].alts[0].AltText.trim();*/
+      
       RESULT[img].description = description;
     } else {
-      const description =
-        !RESULT[img].alts ?
+      const description = 
+        (RESULT[img].imageText ? en.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') + en.description.concepts + RESULT[img].concepts
+        /*!RESULT[img].alts ?
           (RESULT[img].imageText ? en.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') +
         
           en.twitter.description.concepts + RESULT[img].concepts : 
-          RESULT[img].alts[0].AltText.trim();
+          RESULT[img].alts[0].AltText.trim();*/
 
       RESULT[img].description = description;
     }
@@ -642,10 +644,32 @@ function insertTwitterDescription(textarea) {
             });
             span.appendChild(p);
             span.appendChild(document.createElement('hr'));
+            
+            const container = document.createElement('div');
+            container.style.height = "400px";
+            container.style.overflow = "scroll";
+
+            const entry = document.createElement('div');
+            const text = document.createElement('p');
+            text.style.border = "thin solid black";
+            text.style.padding = "0.2em";
+            text.innerHTML = RESULT[CURRENT].description;
+            entry.appendChild(text);
+
+            const copy = document.createElement('button');
+            copy.innerHTML = "Copy";
+            copy.style.marginLeft = "1em";
+            copy.addEventListener('click', function () {
+              navigator.clipboard.writeText(RESULT[CURRENT].description);
+            });
+            entry.appendChild(copy);
+
+            container.appendChild(entry);
+            container.appendChild(document.createElement('br'));
 
             for (const alt of RESULT[CURRENT].alts ?? []) {
               const entry = document.createElement('div');
-              const text = document.createElement('span');
+              const text = document.createElement('p');
               text.style.border = "thin solid black";
               text.style.padding = "0.2em";
               text.innerHTML = alt.AltText;
@@ -659,9 +683,11 @@ function insertTwitterDescription(textarea) {
               });
               entry.appendChild(copy);
 
-              span.appendChild(entry);
-              span.appendChild(document.createElement('br'));
+              container.appendChild(entry);
+              container.appendChild(document.createElement('br'));
             }
+
+            span.appendChild(container);
           }
 
           document.body.appendChild(span);
