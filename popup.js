@@ -114,7 +114,15 @@ function analyzeAll() {
   });
 }
 
-document.getElementById('analyze-all').addEventListener('click', analyzeAll);
+const analyzeAllButton = document.getElementById('analyze-all');
+if (analyzeAllButton) {
+  analyzeAllButton.addEventListener('click', analyzeAll);
+}
+
+const analyzeAllButton2 = document.getElementById('analyze-all2');
+if (analyzeAllButton2) {
+  analyzeAllButton2.addEventListener('click', analyzeAll);
+}
 
 const buttons = document.getElementsByClassName('report_problem');
 

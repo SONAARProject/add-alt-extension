@@ -25,6 +25,7 @@ const pt = {
   insert_alts_description: "Outras descrições possíveis são:",
   description: {
     text: "A imagem pode conter o seguinte texto: ",
-    concepts: "A imagem pode conter os seguintes conceitos: "
+    concepts: "A imagem pode conter os seguintes conceitos: ",
+    watermark: "*Descrição gerada pelo SONAAR."
   }
 }

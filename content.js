@@ -29,24 +29,21 @@ function delayCleanStepsProcess() {
 
 function createDescription(img) {
   chrome.storage.sync.get("lang", function(item) {
+    
     if (item.lang === 'pt') {
       const description = 
-        (RESULT[img].imageText ? pt.description.text + RESULT[img].imageText.phrases[0] + '\n\n' : '') + pt.description.concepts + RESULT[img].concepts
-        /*!RESULT[img].alts ?
-          (RESULT[img].imageText ? pt.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') +
-        
-          pt.twitter.description.concepts + RESULT[img].concepts : 
-          RESULT[img].alts[0].AltText.trim();*/
+        (RESULT[img].imageText && RESULT[img].imageText.phrases && RESULT[img].imageText.phrases[0] !== null ? 
+          pt.description.text + RESULT[img].imageText.phrases[0] + '\n\n' : '') + 
+          pt.description.concepts + RESULT[img].concepts;
+          //+ '\n\n' + pt.description.watermark;
       
       RESULT[img].description = description;
     } else {
       const description = 
-        (RESULT[img].imageText ? en.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') + en.description.concepts + RESULT[img].concepts
-        /*!RESULT[img].alts ?
-          (RESULT[img].imageText ? en.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') +
-        
-          en.twitter.description.concepts + RESULT[img].concepts : 
-          RESULT[img].alts[0].AltText.trim();*/
+        (RESULT[img].imageText && RESULT[img].imageText.phrases && RESULT[img].imageText.phrases[0] !== null ? 
+          en.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') + 
+          en.description.concepts + RESULT[img].concepts;
+          // + '\n\n' + en.description.watermark;
 
       RESULT[img].description = description;
     }
@@ -68,9 +65,16 @@ function setCURRENT(next) {
 }
 
 function copyToClipboard() {
-  const description = RESULT[CURRENT]?.description;
+  let description = RESULT[CURRENT]?.description;
   if (description) {
-    navigator.clipboard.writeText(description);
+    chrome.storage.sync.get("lang", function(item) {
+      if (item.lang === 'pt') {
+        description += '\n\n' + pt.description.watermark;
+      } else {
+        description += '\n\n' + en.description.watermark;
+      }
+      navigator.clipboard.writeText(description);
+    });
   }
 }
 
@@ -660,7 +664,15 @@ function insertTwitterDescription(textarea) {
             copy.innerHTML = "Copy";
             copy.style.marginLeft = "1em";
             copy.addEventListener('click', function () {
-              navigator.clipboard.writeText(RESULT[CURRENT].description);
+              chrome.storage.sync.get("lang", function(item) {
+                let description = RESULT[CURRENT].description;
+                if (item.lang === 'pt') {
+                  description += '\n\n' + pt.description.watermark;
+                } else {
+                  description += '\n\n' + en.description.watermark;
+                }
+                navigator.clipboard.writeText(description);
+              });
             });
             entry.appendChild(copy);
 
@@ -679,7 +691,15 @@ function insertTwitterDescription(textarea) {
               copy.innerHTML = "Copy";
               copy.style.marginLeft = "1em";
               copy.addEventListener('click', function () {
-                navigator.clipboard.writeText(alt.AltText);
+                chrome.storage.sync.get("lang", function(item) {
+                  let description = alt.AltText;
+                  if (item.lang === 'pt') {
+                    description += '\n\n' + pt.description.watermark;
+                  } else {
+                    description += '\n\n' + en.description.watermark;
+                  }
+                  navigator.clipboard.writeText(description);
+                });
               });
               entry.appendChild(copy);
 
@@ -1161,13 +1181,23 @@ function handlePostImagesData(img, _alts, _concepts, _imageText) {
   }
 }
 
+let SEARCH_ALTS_COUNT = 0;
+
 function analyzeAll(force = false) {
+  let playSound = true;
+
   const imgs = document.querySelectorAll('img');
 
   for (const img of imgs || []) {
     const alt = img.getAttribute('alt');
     if (alt !== "" && !img.hasAttribute("_add_alt_extension_id")) {
       if (alt === null || force) {
+        if (playSound) {
+          const sound = new Audio(chrome.extension.getURL("beep.wav"));
+          sound.play();
+          playSound = false;
+        }
+        SEARCH_ALTS_COUNT++;
         img.setAttribute("_add_alt_extension_id", md5(img + new Date().toISOString()));
         const url = getImageUrl(img);
         chrome.runtime.sendMessage({type: "searchUrl", url, lang: navigator.language, id: img.getAttribute("_add_alt_extension_id")});
@@ -1248,6 +1278,12 @@ function addImageAlts(id, _alts) {
     img.setAttribute("_add_alt_extension_message", "An alt was found in database and it was added.");
   } else {
     img.setAttribute("_add_alt_extension_message", "No alt was found in the database.");
+  }
+  SEARCH_ALTS_COUNT--;
+  if (SEARCH_ALTS_COUNT <= 0) {
+    SEARCH_ALTS_COUNT = 0;
+    const sound = new Audio(chrome.extension.getURL("beep.wav"));
+    sound.play();
   }
 }
 
