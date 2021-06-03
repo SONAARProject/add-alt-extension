@@ -47,10 +47,10 @@ function searchImage(img, lang) {
 
       http.send(
         "imageBuffer=" +
-          data[img] +
-          "&lang=" +
-          parseLang(lang) +
-          "&type=authoring"
+        data[img] +
+        "&lang=" +
+        parseLang(lang) +
+        "&type=authoring"
       );
       /*setTimeout(() => {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -80,13 +80,13 @@ function submitImage(img, lang, text, postText) {
 
       http.send(
         "imageBuffer=" +
-          data[img] +
-          "&lang=" +
-          parseLang(lang) +
-          "&altText=" +
-          encodeURIComponent(text) +
-          "&postText=" +
-          encodeURIComponent(postText)
+        data[img] +
+        "&lang=" +
+        parseLang(lang) +
+        "&altText=" +
+        encodeURIComponent(text) +
+        "&postText=" +
+        encodeURIComponent(postText)
       );
     }
   });
@@ -103,12 +103,14 @@ function searchByUrl(url, lang, id) {
   http.onreadystatechange = function () {
     if (http.readyState === 4 && http.status === 200) {
       const response = JSON.parse(http.responseText);
-
+      
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {
           type: "altForImage",
           id,
           alts: response?.alts,
+          concepts: response?.concepts,
+          text: response?.text,
         });
       });
     }

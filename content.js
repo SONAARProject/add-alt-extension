@@ -28,22 +28,22 @@ function delayCleanStepsProcess() {
 }
 
 function createDescription(img) {
-  chrome.storage.sync.get("lang", function(item) {
-    
+  chrome.storage.sync.get("lang", function (item) {
+
     if (item.lang === 'pt') {
-      const description = 
-        (RESULT[img].imageText && RESULT[img].imageText.phrases && RESULT[img].imageText.phrases[0] !== null ? 
-          pt.description.text + RESULT[img].imageText.phrases[0] + '\n\n' : '') + 
-          pt.description.concepts + RESULT[img].concepts;
-          //+ '\n\n' + pt.description.watermark;
-      
+      const description =
+        (RESULT[img].imageText && RESULT[img].imageText.phrases && RESULT[img].imageText.phrases[0] !== null ?
+          pt.description.text + RESULT[img].imageText.phrases[0] + '\n\n' : '') +
+        pt.description.concepts + RESULT[img].concepts;
+      //+ '\n\n' + pt.description.watermark;
+
       RESULT[img].description = description;
     } else {
-      const description = 
-        (RESULT[img].imageText && RESULT[img].imageText.phrases && RESULT[img].imageText.phrases[0] !== null ? 
-          en.description.text +  RESULT[img].imageText.phrases[0] + '\n\n' : '') + 
-          en.description.concepts + RESULT[img].concepts;
-          // + '\n\n' + en.description.watermark;
+      const description =
+        (RESULT[img].imageText && RESULT[img].imageText.phrases && RESULT[img].imageText.phrases[0] !== null ?
+          en.description.text + RESULT[img].imageText.phrases[0] + '\n\n' : '') +
+        en.description.concepts + RESULT[img].concepts;
+      // + '\n\n' + en.description.watermark;
 
       RESULT[img].description = description;
     }
@@ -67,7 +67,7 @@ function setCURRENT(next) {
 function copyToClipboard() {
   let description = RESULT[CURRENT]?.description;
   if (description) {
-    chrome.storage.sync.get("lang", function(item) {
+    chrome.storage.sync.get("lang", function (item) {
       if (item.lang === 'pt') {
         description += '\n\n' + pt.description.watermark;
       } else {
@@ -141,16 +141,16 @@ function handleImage() {
   for (const file of this.files || []) {
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
-      reader.onload = function() {
+      reader.onload = function () {
         HIDE_TWEET_BUTTON = false;
-        
+
         const bytes = new Uint8Array(this.result);
 
         const img = md5(bytes);
         if (!RESULT[img]) {
           RESULT[img] = {};
         }
-        
+
         if (ORDER.includes(img)) {
           const indexOf = ORDER.indexOf(img);
           if (indexOf !== -1) {
@@ -162,10 +162,10 @@ function handleImage() {
 
         const data = {};
         data[img] = JSON.stringify(bytes);
-        
+
         chrome.storage.local.set(data);
         chrome.runtime.sendMessage({ type: "search", lang: navigator.language, img });
-        
+
         if (COUNTER > 0 && reset) {
           STEPS = new Array();
           reset = false;
@@ -290,7 +290,7 @@ function hideAddDescriptionDialog() {
 
 function showTwitterAlertMessage() {
   const submitButton = this;
-  chrome.storage.sync.get("disableTwitterDialogs", function(item) {
+  chrome.storage.sync.get("disableTwitterDialogs", function (item) {
     if (!item.disableTwitterDialogs) {
       if ((!HIDE_TWEET_BUTTON && !STEPS.includes('DESCRIPTION_SAVED')) || (!HIDE_TWEET_BUTTON && !(RESULT[CURRENT] && RESULT[CURRENT].text && RESULT[CURRENT].text.trim()))) {
         submitButton.style.display = "none";
@@ -308,10 +308,10 @@ function showTwitterAlertMessage() {
         if (altFoundDialog) {
           altFoundDialog.remove();
         }
-        
+
         const span = document.createElement('span');
         span.id = "add_description_dialog";
-        chrome.storage.sync.get("lang", function(item) {
+        chrome.storage.sync.get("lang", function (item) {
           if (item.lang === 'pt') {
             span.innerHTML = pt.twitter.alert_message.replace("{value}", addDescription.textContent);
           } else {
@@ -328,7 +328,7 @@ function showTwitterAlertMessage() {
         span.style.left = (clientRect.left + clientRect.width) + "px";
         span.style.zIndex = "100";
         span.style.cursor = "pointer";
-        span.addEventListener("click", function() {
+        span.addEventListener("click", function () {
           span.remove();
         });
         document.body.appendChild(span);
@@ -344,7 +344,7 @@ function handleTwitterAlertMessage(submitButton) {
 
 function showFacebookAlertMessage() {
   const submitButton = this;
-  chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+  chrome.storage.sync.get("disableFacebookDialogs", function (item) {
     if (!item.disableFacebookDialogs) {
       if ((!HIDE_TWEET_BUTTON && !STEPS.includes('DESCRIPTION_SAVED')) || (!HIDE_TWEET_BUTTON && !(RESULT[CURRENT] && RESULT[CURRENT].text && RESULT[CURRENT].text.trim()))) {
         submitButton.style.display = "none";
@@ -362,10 +362,10 @@ function showFacebookAlertMessage() {
         if (altFoundDialog) {
           altFoundDialog.remove();
         }
-    
+
         const span = document.createElement('span');
         span.id = "add_description_dialog";
-        chrome.storage.sync.get("lang", function(item) {
+        chrome.storage.sync.get("lang", function (item) {
           if (item.lang === 'pt') {
             span.innerHTML = pt.facebook.alert_message.replace('{value}', editButton.textContent);
           } else {
@@ -382,7 +382,7 @@ function showFacebookAlertMessage() {
         span.style.left = (clientRect.left - 490) + "px";
         span.style.zIndex = "100";
         span.style.cursor = "pointer";
-        span.addEventListener("click", function() {
+        span.addEventListener("click", function () {
           span.remove();
         });
         document.body.appendChild(span);
@@ -418,7 +418,7 @@ function descriptionChanged() {
 
 function hidePreviousImageButtonDialog() {
   const cycleImageButtonDialog = document.getElementById('cycle_images_dialog');
-  if(cycleImageButtonDialog) {
+  if (cycleImageButtonDialog) {
     cycleImageButtonDialog.remove();
   }
   setCURRENT(false);
@@ -426,7 +426,7 @@ function hidePreviousImageButtonDialog() {
 
 function hideNextImageButtonDialog() {
   const cycleImageButtonDialog = document.getElementById('cycle_images_dialog');
-  if(cycleImageButtonDialog) {
+  if (cycleImageButtonDialog) {
     cycleImageButtonDialog.remove();
   }
   setCURRENT(true);
@@ -444,7 +444,7 @@ function setNextImageButton(nextImageButton) {
 }
 
 function showTwitterCycleImageButtonDialog() {
-  chrome.storage.sync.get("disableTwitterDialogs", function(item) {
+  chrome.storage.sync.get("disableTwitterDialogs", function (item) {
     if (!item.disableTwitterDialogs) {
       const pasteDialog = document.getElementById('paste_dialog');
       const cycleDialog = document.getElementById('cycle_images_dialog');
@@ -453,7 +453,7 @@ function showTwitterCycleImageButtonDialog() {
         const clientRect = saveButton.getBoundingClientRect();
         const span = document.createElement("span");
         span.id = "cycle_images_dialog";
-        chrome.storage.sync.get("lang", function(item) {
+        chrome.storage.sync.get("lang", function (item) {
           if (item.lang === 'pt') {
             span.innerHTML = pt.twitter.cycle_arrows;
           } else {
@@ -470,7 +470,7 @@ function showTwitterCycleImageButtonDialog() {
         span.style.left = (clientRect.left - clientRect.width - 200) + "px";
         span.style.zIndex = "100";
         span.style.cursor = "pointer";
-        span.addEventListener("click", function() {
+        span.addEventListener("click", function () {
           span.remove();
         });
         document.body.appendChild(span);
@@ -481,7 +481,7 @@ function showTwitterCycleImageButtonDialog() {
 
 function hideSaveButtonDialog() {
   const saveButtonDialog = document.getElementById('save_dialog');
-  if(saveButtonDialog) {
+  if (saveButtonDialog) {
     saveButtonDialog.remove();
   }
   /*const host = location.host;
@@ -495,12 +495,12 @@ function showTwitterSaveButtonDialog(saveButton) {
   saveButton.removeEventListener("click", hideSaveButtonDialog, true);
   saveButton.addEventListener("click", hideSaveButtonDialog, true);
 
-  chrome.storage.sync.get("disableTwitterDialogs", function(item) {
+  chrome.storage.sync.get("disableTwitterDialogs", function (item) {
     if (!item.disableTwitterDialogs) {
       const clientRect = saveButton.getBoundingClientRect();
       const span = document.createElement("span");
       span.id = "save_dialog";
-      chrome.storage.sync.get("lang", function(item) {
+      chrome.storage.sync.get("lang", function (item) {
         if (item.lang === 'pt') {
           span.innerHTML = pt.twitter.save_button.replace('{value}', saveButton.textContent);
         } else {
@@ -517,7 +517,7 @@ function showTwitterSaveButtonDialog(saveButton) {
       span.style.left = (clientRect.left + clientRect.width) + "px";
       span.style.zIndex = "100";
       span.style.cursor = "pointer";
-      span.addEventListener("click", function() {
+      span.addEventListener("click", function () {
         span.remove();
       });
       document.body.appendChild(span);
@@ -529,12 +529,12 @@ function showFacebookSaveButtonDialog(saveButton) {
   saveButton.removeEventListener("click", hideSaveButtonDialog, true);
   saveButton.addEventListener("click", hideSaveButtonDialog, true);
 
-  chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+  chrome.storage.sync.get("disableFacebookDialogs", function (item) {
     if (!item.disableFacebookDialogs) {
       const clientRect = saveButton.getBoundingClientRect();
       const span = document.createElement("span");
       span.id = "save_dialog";
-      chrome.storage.sync.get("lang", function(item) {
+      chrome.storage.sync.get("lang", function (item) {
         if (item.lang === 'pt') {
           span.innerHTML = pt.facebook.save_button.replace('{value}', saveButton.textContent);
         } else {
@@ -551,7 +551,7 @@ function showFacebookSaveButtonDialog(saveButton) {
       span.style.left = (clientRect.left) + "px";
       span.style.zIndex = "100";
       span.style.cursor = "pointer";
-      span.addEventListener("click", function() {
+      span.addEventListener("click", function () {
         span.remove();
       });
       document.body.appendChild(span);
@@ -567,7 +567,7 @@ function doAllImagesHaveAltText() {
       break;
     }
   }
-  
+
   return yes;
 }
 
@@ -578,7 +578,7 @@ function hidePasteDialog() {
 
     const host = location.host;
     if (host.includes("twitter.com")) {
-      setTimeout(function() {
+      setTimeout(function () {
         if (doAllImagesHaveAltText()) {
           const saveButton = grabTwitterSaveButton();
           if (saveButton) {
@@ -605,11 +605,11 @@ function insertTwitterDescription(textarea) {
 
     if (RESULT[CURRENT] && RESULT[CURRENT].show_paste_dialog) {
       const clientRect = textarea.getBoundingClientRect();
-      
+
       textarea.removeEventListener("paste", hidePasteDialog, true);
       textarea.addEventListener("paste", hidePasteDialog, true);
-      
-      chrome.storage.sync.get("disableTwitterDialogs", function(item) {
+
+      chrome.storage.sync.get("disableTwitterDialogs", function (item) {
         if (!item.disableTwitterDialogs) {
           const span = document.createElement('span');
           span.id = "paste_dialog";
@@ -624,7 +624,7 @@ function insertTwitterDescription(textarea) {
           span.style.zIndex = "100";
 
           if (!RESULT[CURRENT].alts) {
-            chrome.storage.sync.get("lang", function(item) {
+            chrome.storage.sync.get("lang", function (item) {
               if (item.lang === 'pt') {
                 span.innerHTML = pt.twitter.paste_message;
               } else {
@@ -632,14 +632,14 @@ function insertTwitterDescription(textarea) {
               }
             });
             span.style.cursor = "pointer";
-            span.addEventListener("click", function() {
+            span.addEventListener("click", function () {
               span.remove();
             });
             copyToClipboard();
           } else {
             span.style.top = (clientRect.top - 500) + "px";
             const p = document.createElement("p");
-            chrome.storage.sync.get("lang", function(item) {
+            chrome.storage.sync.get("lang", function (item) {
               if (item.lang === 'pt') {
                 p.innerHTML = pt.twitter.alts_list_message;
               } else {
@@ -648,7 +648,7 @@ function insertTwitterDescription(textarea) {
             });
             span.appendChild(p);
             span.appendChild(document.createElement('hr'));
-            
+
             const container = document.createElement('div');
             container.style.height = "400px";
             container.style.overflow = "scroll";
@@ -664,7 +664,7 @@ function insertTwitterDescription(textarea) {
             copy.innerHTML = "Copy";
             copy.style.marginLeft = "1em";
             copy.addEventListener('click', function () {
-              chrome.storage.sync.get("lang", function(item) {
+              chrome.storage.sync.get("lang", function (item) {
                 let description = RESULT[CURRENT].description;
                 if (item.lang === 'pt') {
                   description += '\n\n' + pt.description.watermark;
@@ -691,7 +691,7 @@ function insertTwitterDescription(textarea) {
               copy.innerHTML = "Copy";
               copy.style.marginLeft = "1em";
               copy.addEventListener('click', function () {
-                chrome.storage.sync.get("lang", function(item) {
+                chrome.storage.sync.get("lang", function (item) {
                   let description = alt.AltText;
                   if (item.lang === 'pt') {
                     description += '\n\n' + pt.description.watermark;
@@ -725,7 +725,7 @@ function insertFacebookDescription(textarea) {
 
   textarea.removeEventListener("keyup", descriptionChanged, true);
   textarea.addEventListener("keyup", descriptionChanged, true);
-  
+
   if (RESULT[CURRENT] && RESULT[CURRENT].show_paste_dialog) {
     const radioButtons = document.querySelectorAll('[class="oajrlxb2 rq0escxv f1sip0of hidtqoto nhd2j8a9 datstx6m kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x b5wmifdl lzcic4wl jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso pmk7jnqg j9ispegn kr520xx4 k4urcfbm"]');
     if (radioButtons.length > 0) {
@@ -737,11 +737,11 @@ function insertFacebookDescription(textarea) {
       textarea.addEventListener("paste", hidePasteDialog, true);
       textarea.focus();
 
-      chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+      chrome.storage.sync.get("disableFacebookDialogs", function (item) {
         if (!item.disableFacebookDialogs) {
           const span = document.createElement('span');
           span.id = "paste_dialog";
-          chrome.storage.sync.get("lang", function(item) {
+          chrome.storage.sync.get("lang", function (item) {
             if (item.lang === 'pt') {
               span.innerHTML = pt.facebook.paste_message;
             } else {
@@ -758,7 +758,7 @@ function insertFacebookDescription(textarea) {
           span.style.left = (clientRect.left + clientRect.width + 15) + "px";
           span.style.zIndex = "100";
           span.style.cursor = "pointer";
-          span.addEventListener("click", function() {
+          span.addEventListener("click", function () {
             span.remove();
           });
           document.body.appendChild(span);
@@ -777,12 +777,12 @@ function descriptionTabClicked() {
 }
 
 function showFacebookDescriptionTabDialog(descriptionTab) {
-  chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+  chrome.storage.sync.get("disableFacebookDialogs", function (item) {
     if (!item.disableFacebookDialogs) {
       const clientRect = descriptionTab.getBoundingClientRect();
       const span = document.createElement('span');
       span.id = "description_tab_dialog";
-      chrome.storage.sync.get("lang", function(item) {
+      chrome.storage.sync.get("lang", function (item) {
         if (item.lang === 'pt') {
           span.innerHTML = pt.facebook.description_tab.replace("{value}", descriptionTab.textContent);
         } else {
@@ -799,7 +799,7 @@ function showFacebookDescriptionTabDialog(descriptionTab) {
       span.style.left = (clientRect.left + clientRect.width - 40) + "px";
       span.style.zIndex = "100";
       span.style.cursor = "pointer";
-      span.addEventListener("click", function() {
+      span.addEventListener("click", function () {
         span.remove();
       });
       document.body.appendChild(span);
@@ -843,7 +843,7 @@ function dismissFacebookConcludeDialog() {
 }
 
 function handleFacebookConcludeButton(button) {
-  chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+  chrome.storage.sync.get("disableFacebookDialogs", function (item) {
     if (!item.disableFacebookDialogs) {
       button.removeEventListener('click', dismissFacebookConcludeDialog, true);
       button.addEventListener('click', dismissFacebookConcludeDialog, true);
@@ -852,7 +852,7 @@ function handleFacebookConcludeButton(button) {
         const clientRect = button.getBoundingClientRect();
         const span = document.createElement('span');
         span.id = "conclude_button_dialog";
-        chrome.storage.sync.get("lang", function(item) {
+        chrome.storage.sync.get("lang", function (item) {
           if (item.lang === 'pt') {
             span.innerHTML = pt.facebook.conclude_button.replace("{value}", descriptionTab.textContent);
           } else {
@@ -869,7 +869,7 @@ function handleFacebookConcludeButton(button) {
         span.style.left = (clientRect.left) + "px";
         span.style.zIndex = "100";
         span.style.cursor = "pointer";
-        span.addEventListener("click", function() {
+        span.addEventListener("click", function () {
           span.remove();
         });
         document.body.appendChild(span);
@@ -981,14 +981,14 @@ function grabFacebookEditButton() {
 }
 
 function showFacebookClickEditButtonDialog(image) {
-  chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+  chrome.storage.sync.get("disableFacebookDialogs", function (item) {
     if (!item.disableFacebookDialogs) {
       const spanExists = document.getElementById('click_edit_dialog');
       if (!spanExists) {
         const clientRect = image.getBoundingClientRect();
         const span = document.createElement('span');
         span.id = "click_edit_dialog";
-        chrome.storage.sync.get("lang", function(item) {
+        chrome.storage.sync.get("lang", function (item) {
           if (item.lang === 'pt') {
             span.innerHTML = pt.facebook.hover_image;
           } else {
@@ -1004,7 +1004,7 @@ function showFacebookClickEditButtonDialog(image) {
         span.style.left = (clientRect.left - 250) + "px";
         span.style.zIndex = "100";
         span.style.cursor = "pointer";
-        span.addEventListener("click", function() {
+        span.addEventListener("click", function () {
           span.remove();
         });
         document.body.appendChild(span);
@@ -1037,7 +1037,7 @@ function submitImages() {
   const postText = grabTwitterPostText();
   for (const img in RESULT) {
     if (RESULT[img].text) {
-      chrome.runtime.sendMessage({type: "submit", img, lang: navigator.language, text: RESULT[img].text, postText });
+      chrome.runtime.sendMessage({ type: "submit", img, lang: navigator.language, text: RESULT[img].text, postText });
     }
   }
   cleanStepsProcess();
@@ -1061,12 +1061,12 @@ function showTwitterAltMessage() {
 
   addDescription.removeEventListener('click', hideAltFoundDialog, true);
   addDescription.addEventListener('click', hideAltFoundDialog, true);
-  
-  chrome.storage.sync.get("disableTwitterDialogs", function(item) {
+
+  chrome.storage.sync.get("disableTwitterDialogs", function (item) {
     if (!item.disableTwitterDialogs) {
       const span = document.createElement('span');
       span.id = "alt_found_dialog";
-      chrome.storage.sync.get("lang", function(item2) {
+      chrome.storage.sync.get("lang", function (item2) {
         if (item2.lang === 'pt') {
           if (COUNTER === 1) {
             span.innerHTML = pt.twitter.alt_found.s.replace('{value}', addDescription.textContent);
@@ -1090,7 +1090,7 @@ function showTwitterAltMessage() {
       span.style.left = (clientRect.left + clientRect.width) + "px";
       span.style.zIndex = "100";
       span.style.cursor = "pointer";
-      span.addEventListener("click", function() {
+      span.addEventListener("click", function () {
         span.remove();
       });
       document.body.appendChild(span);
@@ -1104,12 +1104,12 @@ function showFacebookAltMessage() {
 
   editButton.removeEventListener('click', hideAltFoundDialog, true);
   editButton.addEventListener('click', hideAltFoundDialog, true);
-  
-  chrome.storage.sync.get("disableFacebookDialogs", function(item) {
+
+  chrome.storage.sync.get("disableFacebookDialogs", function (item) {
     if (!item.disableFacebookDialogs) {
       const span = document.createElement('span');
       span.id = "alt_found_dialog";
-      chrome.storage.sync.get("lang", function(item) {
+      chrome.storage.sync.get("lang", function (item) {
         if (item.lang === 'pt') {
           if (COUNTER === 1) {
             span.innerHTML = pt.facebook.alt_found.s.replace('{value}', editButton.textContent);
@@ -1139,7 +1139,7 @@ function showFacebookAltMessage() {
       span.style.position = "fixed";
       span.style.zIndex = "100";
       span.style.cursor = "pointer";
-      span.addEventListener("click", function() {
+      span.addEventListener("click", function () {
         span.remove();
       });
       document.body.appendChild(span);
@@ -1168,7 +1168,7 @@ function handlePostImagesData(img, _alts, _concepts, _imageText) {
   createDescription(img);
 
   COUNTER++;
-  
+
   if (COUNTER === Object.keys(RESULT).length) {
     STEPS.push('IMAGE_RESULT');
     CURRENT = ORDER[0];
@@ -1200,7 +1200,7 @@ function analyzeAll(force = false) {
         SEARCH_ALTS_COUNT++;
         img.setAttribute("_add_alt_extension_id", md5(img + new Date().toISOString()));
         const url = getImageUrl(img);
-        chrome.runtime.sendMessage({type: "searchUrl", url, lang: navigator.language, id: img.getAttribute("_add_alt_extension_id")});
+        chrome.runtime.sendMessage({ type: "searchUrl", url, lang: navigator.language, id: img.getAttribute("_add_alt_extension_id") });
       }
     }
   }
@@ -1231,7 +1231,7 @@ function analyzeOne() {
     dialog.style.top = "100px";
     dialog.style.left = "100px";
     dialog.style.padding = "1em";
-    chrome.storage.sync.get("lang", function(item) {
+    chrome.storage.sync.get("lang", function (item) {
       if (item.lang === 'pt') {
         dialog.innerText = pt.insert_alts_description;
       } else {
@@ -1252,7 +1252,7 @@ function analyzeOne() {
   }
 }
 
-function addImageAlts(id, _alts) {
+function addImageAlts(id, _alts, _concepts) {
   const img = document.querySelector(`[_add_alt_extension_id="${id}"]`);
   if (_alts) {
     const alts = JSON.parse(_alts);
@@ -1276,6 +1276,21 @@ function addImageAlts(id, _alts) {
       img.setAttribute('tabindex', 0);
     }
     img.setAttribute("_add_alt_extension_message", "An alt was found in database and it was added.");
+  } else if (_concepts) {
+    const concepts = "This image may contain " + _concepts.split(",").map((c, i) => (i === 0 ? c : " " + c));
+    if (img.attributes["alt"] === undefined) {
+      img.setAttribute("alt", concepts);
+      img.setAttribute('tabindex', 0);
+      img.setAttribute("_add_alt_extension_message", "No alt was found in database. Added image concepts.");
+    } else {
+      const data = {
+        alts: concepts
+      }
+      sessionStorage.setItem(id, JSON.stringify(data));
+
+      img.setAttribute('tabindex', 0);
+      img.setAttribute("_add_alt_extension_message", "No alt was found in database. Keeping original alt and adding concepts for consultation.");
+    }
   } else {
     img.setAttribute("_add_alt_extension_message", "No alt was found in the database.");
   }
@@ -1288,20 +1303,20 @@ function addImageAlts(id, _alts) {
 }
 
 chrome.runtime.onMessage.addListener(
-  function(message) {
+  function (message) {
     if (message.type === "checkAltText") {
       handlePostImagesData(message.img, message.alts, message.concepts, message.text);
     } else if (message.type === "searchAllByUrl") {
       analyzeAll(message.force);
     } else if (message.type === "altForImage") {
-      addImageAlts(message.id, message.alts);
+      addImageAlts(message.id, message.alts, message.concepts);
     }
   }
 );
 
 function initTwitterSupport() {
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function() {
+  const observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function () {
       const discardPostButton = grabTwitterDiscardPostButton();
       if (discardPostButton) {
         discardPostButton.removeEventListener('click', cleanStepsProcess, true);
@@ -1401,8 +1416,8 @@ function initTwitterSupport() {
 }
 
 function initFacebookSupport() {
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function() {
+  const observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function () {
       const discardPostButton = grabFacebookDiscardPostButton();
       if (discardPostButton) {
         discardPostButton.removeEventListener('click', delayCleanStepsProcess, true);
@@ -1472,12 +1487,12 @@ function initFacebookSupport() {
 }
 
 function activateShortcut() {
-  document.addEventListener("keyup", function(event) {
-    if (event.ctrlKey && event.altKey && event.key === "s") {
-      chrome.storage.sync.get("force", function(item) {
+  document.addEventListener("keyup", function (event) {
+    if (event.ctrlKey && event.shiftKey && event.key === "S") {
+      chrome.storage.sync.get("force", function (item) {
         analyzeAll(item.force);
       });
-    } else if (event.ctrlKey && event.altKey && event.key === "i") {
+    } else if (event.ctrlKey && event.shiftKey && event.key === "I") {
       analyzeOne();
     } else if (event.key === "Escape") {
       const active = document.activeElement;
@@ -1503,12 +1518,12 @@ function loadMainFunctions() {
   } /*else if (host.includes("facebook.com")) {
     initFacebookSupport();
   }*/
-  
+
   activateShortcut();
 }
 
 document.onreadystatechange = function () {
-  if(document.readyState === "complete"){
+  if (document.readyState === "complete") {
     loadMainFunctions();
   }
 }
