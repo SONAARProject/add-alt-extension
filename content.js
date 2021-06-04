@@ -1492,7 +1492,7 @@ function activateShortcut() {
       chrome.storage.sync.get("force", function (item) {
         analyzeAll(item.force);
       });
-    } else if (event.ctrlKey && event.shiftKey && event.key === "I") {
+    } else if (event.ctrlKey && event.shiftKey && event.key === "D") {
       analyzeOne();
     } else if (event.key === "Escape") {
       const active = document.activeElement;
