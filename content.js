@@ -1183,7 +1183,11 @@ function handlePostImagesData(img, _alts, _concepts, _imageText) {
 
 let SEARCH_ALTS_COUNT = 0;
 
-function analyzeAll(force = false) {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function analyzeAll(force = false) {
   let playSound = true;
 
   const imgs = document.querySelectorAll('img');
@@ -1198,9 +1202,12 @@ function analyzeAll(force = false) {
           playSound = false;
         }
         SEARCH_ALTS_COUNT++;
-        img.setAttribute("_add_alt_extension_id", md5(img + new Date().toISOString()));
+        const date = new Date().toISOString()
+        const id = await md5(img + date);
+        img.setAttribute("_add_alt_extension_id", id);
         const url = getImageUrl(img);
         chrome.runtime.sendMessage({ type: "searchUrl", url, lang: navigator.language, id: img.getAttribute("_add_alt_extension_id") });
+        await sleep(100); // TODO: there must be an async call somewhere in the lopp that causes some images to end up with the same up... this is a fix but a proper solution is needed
       }
     }
   }
