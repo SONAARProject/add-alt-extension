@@ -1220,8 +1220,6 @@ function analyzeOne() {
   const img = document.activeElement;
   const alt_id = img.getAttribute('_add_alt_extension_id');
   if (alt_id) {
-    const data = JSON.parse(sessionStorage.getItem(alt_id));
-    const alts = data.alts.split(';');
 
     activeElement = document.activeElement;
 
@@ -1239,16 +1237,31 @@ function analyzeOne() {
     dialog.style.left = "100px";
     dialog.style.padding = "1em";
     chrome.storage.sync.get("lang", function (item) {
-      if (item.lang === 'pt') {
-        dialog.innerText = pt.insert_alts_description;
-      } else {
-        dialog.innerText = en.insert_alts_description;
-      }
 
-      for (const alt of alts ?? []) {
-        const p = document.createElement('p');
-        p.innerText = alt;
-        dialog.appendChild(p);
+      const data = JSON.parse(sessionStorage.getItem(alt_id));
+
+      if (data) {
+        const alts = data.alts.split(';');
+
+        if (item.lang === 'pt') {
+          dialog.innerText = pt.insert_alts_description;
+        } else {
+          dialog.innerText = en.insert_alts_description;
+        }
+
+
+        for (const alt of alts ?? []) {
+          const p = document.createElement('p');
+          p.innerText = alt;
+          dialog.appendChild(p);
+        }
+      } else {
+        if (item.lang === 'pt') {
+          dialog.innerText = pt.description.nothing;
+        } else {
+          dialog.innerText = en.description.nothing;
+        }
+
       }
     });
 
@@ -1260,53 +1273,56 @@ function analyzeOne() {
 }
 
 function addImageAlts(id, _alts, _concepts) {
-  const img = document.querySelector(`[_add_alt_extension_id="${id}"]`);
-  if (_alts) {
-    const alts = JSON.parse(_alts);
-    if (img.attributes["alt"] === undefined) {
-      img.setAttribute("alt", alts[0].AltText.trim());
-      img.setAttribute('tabindex', 0);
+  chrome.storage.sync.get("lang", function (item) {
+    console.log(item.lang);
+    const img = document.querySelector(`[_add_alt_extension_id="${id}"]`);
+    if (_alts) {
+      const alts = JSON.parse(_alts);
+      if (img.attributes["alt"] === undefined) {
+        img.setAttribute("alt", alts[0].AltText.trim());
+        img.setAttribute('tabindex', 0);
 
-      const data = {
-        alts: alts.map(a => a.AltText.trim()).join("; "),
+        const data = {
+          alts: alts.map(a => a.AltText.trim()).join("; "),
+        }
+
+        sessionStorage.setItem(id, JSON.stringify(data));
+      } else {
+        const data = {
+          alts: alts.map(a => a.AltText.trim()).join("; ")
+        }
+
+        sessionStorage.setItem(id, JSON.stringify(data));
+
+        img.setAttribute("alt", img.getAttribute("alt") + "; " + alts[0].AltText.trim());
+        img.setAttribute('tabindex', 0);
       }
+      img.setAttribute("_add_alt_extension_message", "An alt was found in database and it was added.");
+    } else if (_concepts) {
+      const concepts = (item.lang === 'pt' ? pt.description.text : en.description.text) + _concepts.split(",").map((c, i) => (i === 0 ? c : " " + c));
+      if (img.attributes["alt"] === undefined) {
+        img.setAttribute("alt", concepts);
+        img.setAttribute('tabindex', 0);
+        img.setAttribute("_add_alt_extension_message", "No alt was found in database. Added image concepts.");
+      } else {
+        const data = {
+          alts: concepts
+        }
+        sessionStorage.setItem(id, JSON.stringify(data));
 
-      sessionStorage.setItem(id, JSON.stringify(data));
+        img.setAttribute('tabindex', 0);
+        img.setAttribute("_add_alt_extension_message", "No alt was found in database. Keeping original alt and adding concepts for consultation.");
+      }
     } else {
-      const data = {
-        alts: alts.map(a => a.AltText.trim()).join("; ")
-      }
-
-      sessionStorage.setItem(id, JSON.stringify(data));
-
-      img.setAttribute("alt", img.getAttribute("alt") + "; " + alts[0].AltText.trim());
-      img.setAttribute('tabindex', 0);
+      img.setAttribute("_add_alt_extension_message", "No alt was found in the database.");
     }
-    img.setAttribute("_add_alt_extension_message", "An alt was found in database and it was added.");
-  } else if (_concepts) {
-    const concepts = "This image may contain " + _concepts.split(",").map((c, i) => (i === 0 ? c : " " + c));
-    if (img.attributes["alt"] === undefined) {
-      img.setAttribute("alt", concepts);
-      img.setAttribute('tabindex', 0);
-      img.setAttribute("_add_alt_extension_message", "No alt was found in database. Added image concepts.");
-    } else {
-      const data = {
-        alts: concepts
-      }
-      sessionStorage.setItem(id, JSON.stringify(data));
-
-      img.setAttribute('tabindex', 0);
-      img.setAttribute("_add_alt_extension_message", "No alt was found in database. Keeping original alt and adding concepts for consultation.");
+    SEARCH_ALTS_COUNT--;
+    if (SEARCH_ALTS_COUNT <= 0) {
+      SEARCH_ALTS_COUNT = 0;
+      const sound = new Audio(chrome.extension.getURL("beep.wav"));
+      sound.play();
     }
-  } else {
-    img.setAttribute("_add_alt_extension_message", "No alt was found in the database.");
-  }
-  SEARCH_ALTS_COUNT--;
-  if (SEARCH_ALTS_COUNT <= 0) {
-    SEARCH_ALTS_COUNT = 0;
-    const sound = new Audio(chrome.extension.getURL("beep.wav"));
-    sound.play();
-  }
+  });
 }
 
 chrome.runtime.onMessage.addListener(
