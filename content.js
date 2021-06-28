@@ -163,8 +163,10 @@ function handleImage() {
         const data = {};
         data[img] = JSON.stringify(bytes);
 
+        const socialMedia = location.host.includes('twitter.com') ? 'twitter' : location.host.includes('facebook.com') ? 'facebook' : null;
+
         chrome.storage.local.set(data);
-        chrome.runtime.sendMessage({ type: "search", lang: navigator.language, img });
+        chrome.runtime.sendMessage({ type: "search", lang: navigator.language, img, socialMedia });
 
         if (COUNTER > 0 && reset) {
           STEPS = new Array();
@@ -1037,7 +1039,8 @@ function submitImages() {
   const postText = grabTwitterPostText();
   for (const img in RESULT) {
     if (RESULT[img].text) {
-      chrome.runtime.sendMessage({ type: "submit", img, lang: navigator.language, text: RESULT[img].text, postText });
+      const socialMedia = location.host.includes('twitter.com') ? 'twitter' : location.host.includes('facebook.com') ? 'facebook' : null;
+      chrome.runtime.sendMessage({ type: "submit", img, lang: navigator.language, text: RESULT[img].text, postText, socialMedia });
     }
   }
   cleanStepsProcess();

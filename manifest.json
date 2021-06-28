@@ -18,7 +18,7 @@
     }
   ],
   "background": {
-    "scripts": ["endpoints.js", "background.js"],
+    "scripts": ["md5.min.js", "endpoints.js", "background.js"],
     "persistent": false
   },
   "web_accessible_resources": ["beep.wav"],

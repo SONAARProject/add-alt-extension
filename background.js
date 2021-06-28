@@ -1,8 +1,12 @@
-/*const MOCK = {
-  "2888d9f39e3abf24729a6cbe0b525049": { concepts: JSON.stringify('coisa, coisa2, coisa3') },
-  "abd28a911771a750f660eb4e8509e2c5": { alts: JSON.stringify([{AltText: 'gato'}]) },
-  "cd7e0b0476cca1beff4fa85adc3f8495": { alts: JSON.stringify([{AltText: 'pés'}]) }
-};*/
+function generateUniqueUserID() {
+  const userId = localStorage.getItem('sonaarUserId');
+  if (!userId) {
+    const generatedUserId = md5(Math.random().toString().substr(2, 64) + new Date());
+    localStorage.setItem('sonaarUserId', generatedUserId);
+  }
+}
+
+generateUniqueUserID();
 
 function parseLang(lang) {
   if (lang !== undefined) {
@@ -13,7 +17,7 @@ function parseLang(lang) {
   return "undefined";
 }
 
-function searchImage(img, lang) {
+function searchImage(img, lang, socialMedia) {
   chrome.storage.local.get(img, function (data) {
     if (typeof data[img] === "undefined") {
       console.log("No data");
@@ -50,18 +54,16 @@ function searchImage(img, lang) {
         data[img] +
         "&lang=" +
         parseLang(lang) +
-        "&type=authoring"
+        "&type=suggestion" +
+        "&platform=extension" +
+        "&socialMedia=" + socialMedia +
+        "&userId=" + localStorage.getItem('sonaarUserId')
       );
-      /*setTimeout(() => {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, { type: "checkAltText", img, alts: MOCK[img]?.alts, concepts: MOCK[img]?.concepts });
-        });
-      }, 150 * 10);*/
     }
   });
 }
 
-function submitImage(img, lang, text, postText) {
+function submitImage(img, lang, text, postText, socialMedia) {
   chrome.storage.local.get(img, function (data) {
     if (typeof data[img] === "undefined") {
       console.log("No data");
@@ -86,7 +88,11 @@ function submitImage(img, lang, text, postText) {
         "&altText=" +
         encodeURIComponent(text) +
         "&postText=" +
-        encodeURIComponent(postText)
+        encodeURIComponent(postText) +
+        "&type=authoring" +
+        "&platform=extension" +
+        "&socialMedia=" + socialMedia +
+        "&userId=" + localStorage.getItem('sonaarUserId')
       );
     }
   });
@@ -95,8 +101,8 @@ function submitImage(img, lang, text, postText) {
 function searchByUrl(url, lang, id) {
   const http = new XMLHttpRequest();
   http.open(
-    "GET",
-    searchEndpoint + "/" + parseLang(lang) + "/" + encodeURIComponent(url),
+    "POST",
+    searchEndpoint,
     true
   );
   http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -116,19 +122,28 @@ function searchByUrl(url, lang, id) {
     }
   };
 
-  http.send();
+  http.send(
+    "imageUrl=" +
+    encodeURIComponent(url) +
+    "&lang=" +
+    parseLang(lang) +
+    "&type=consumption" +
+    "&platform=extension" +
+    "&socialMedia=" + socialMedia +
+    "&userId=" + localStorage.getItem('sonaarUserId')
+  );
 }
 
 chrome.runtime.onMessage.addListener(function (message) {
   switch (message.type) {
     case "search":
-      searchImage(message.img, message.lang);
+      searchImage(message.img, message.lang, message.socialMedia);
       break;
     case "searchUrl":
       searchByUrl(message.url, message.lang, message.id);
       break;
     case "submit":
-      submitImage(message.img, message.lang, message.text, message.postText);
+      submitImage(message.img, message.lang, message.text, message.postText, message.socialMedia);
       break;
     default:
       console.log("default message");
