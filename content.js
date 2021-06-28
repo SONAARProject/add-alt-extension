@@ -1541,9 +1541,9 @@ function loadMainFunctions() {
   const host = location.host;
   if (host.includes("twitter.com")) {
     initTwitterSupport();
-  } /*else if (host.includes("facebook.com")) {
+  } else if (host.includes("facebook.com")) {
     initFacebookSupport();
-  }*/
+  }
 
   activateShortcut();
 }
