@@ -42,9 +42,11 @@ function createDescription(img) {
 
       RESULT[img].description = description;
     } else {
+      console.log(RESULT[img].imageText);
       const description =
         (RESULT[img].imageText &&
         RESULT[img].imageText.phrases &&
+        RESULT[img].imageText.phrases.length !== 0 &&
         RESULT[img].imageText.phrases[0] !== null
           ? en.description.text + RESULT[img].imageText.phrases[0] + "\n\n"
           : "") +
