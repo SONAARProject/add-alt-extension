@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "SONAAR: Add Alts",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "This extension allows to add an alt text when posting images in social media.",
   "short_name": "sonaar-add-alts",
   "options_page": "options.html",

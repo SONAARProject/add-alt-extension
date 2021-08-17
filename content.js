@@ -42,7 +42,6 @@ function createDescription(img) {
 
       RESULT[img].description = description;
     } else {
-      console.log(RESULT[img].imageText);
       const description =
         (RESULT[img].imageText &&
         RESULT[img].imageText.phrases &&
@@ -1496,6 +1495,8 @@ function getImageUrl(image) {
 
   if (image.src.startsWith("http")) {
     return image.src;
+  } else if (image.src.startsWith("./")) {
+    return location.href + image.src.subtring(1, image.src.length - 1);
   } else {
     return location.href + image.src;
   }
@@ -1504,7 +1505,10 @@ function getImageUrl(image) {
 function handlePostImagesData(img, _alts, _concepts, _imageText) {
   const alts = _alts ? JSON.parse(_alts) : undefined;
   const concepts = _concepts ? JSON.parse(_concepts) : undefined;
-  const imageText = _imageText ? JSON.parse(_imageText) : undefined;
+  const imageText =
+    _imageText && typeof _imageText === "string"
+      ? JSON.parse(_imageText)
+      : undefined;
   RESULT[img] = { alts, concepts, imageText, show_paste_dialog: true };
 
   createDescription(img);
@@ -1548,13 +1552,15 @@ async function analyzeAll(force = false) {
         const id = await md5(img + date);
         img.setAttribute("_add_alt_extension_id", id);
         const url = getImageUrl(img);
-        chrome.runtime.sendMessage({
-          type: "searchUrl",
-          url,
-          lang: navigator.language,
-          id: img.getAttribute("_add_alt_extension_id"),
-        });
-        await sleep(100); // TODO: there must be an async call somewhere in the lopp that causes some images to end up with the same up... this is a fix but a proper solution is needed
+        if (url) {
+          chrome.runtime.sendMessage({
+            type: "searchUrl",
+            url: url.trim(),
+            lang: navigator.language,
+            id: img.getAttribute("_add_alt_extension_id"),
+          });
+          await sleep(100); // TODO: there must be an async call somewhere in the lopp that causes some images to end up with the same up... this is a fix but a proper solution is needed
+        }
       }
     }
   }

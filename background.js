@@ -1,8 +1,10 @@
 function generateUniqueUserID() {
-  const userId = localStorage.getItem('sonaarUserId');
+  const userId = localStorage.getItem("sonaarUserId");
   if (!userId) {
-    const generatedUserId = md5(Math.random().toString().substr(2, 64) + new Date());
-    localStorage.setItem('sonaarUserId', generatedUserId);
+    const generatedUserId = md5(
+      Math.random().toString().substr(2, 64) + new Date()
+    );
+    localStorage.setItem("sonaarUserId", generatedUserId);
   }
 }
 
@@ -51,13 +53,15 @@ function searchImage(img, lang, socialMedia) {
 
       http.send(
         "imageBuffer=" +
-        data[img] +
-        "&lang=" +
-        parseLang(lang) +
-        "&type=suggestion" +
-        "&platform=extension" +
-        "&socialMedia=" + socialMedia +
-        "&userId=" + localStorage.getItem('sonaarUserId')
+          data[img] +
+          "&lang=" +
+          parseLang(lang) +
+          "&type=suggestion" +
+          "&platform=extension" +
+          "&socialMedia=" +
+          socialMedia +
+          "&userId=" +
+          localStorage.getItem("sonaarUserId")
       );
     }
   });
@@ -82,17 +86,19 @@ function submitImage(img, lang, text, postText, socialMedia) {
 
       http.send(
         "imageBuffer=" +
-        data[img] +
-        "&lang=" +
-        parseLang(lang) +
-        "&altText=" +
-        encodeURIComponent(text) +
-        "&postText=" +
-        encodeURIComponent(postText) +
-        "&type=authoring" +
-        "&platform=extension" +
-        "&socialMedia=" + socialMedia +
-        "&userId=" + localStorage.getItem('sonaarUserId')
+          data[img] +
+          "&lang=" +
+          parseLang(lang) +
+          "&altText=" +
+          encodeURIComponent(text) +
+          "&postText=" +
+          encodeURIComponent(postText) +
+          "&type=authoring" +
+          "&platform=extension" +
+          "&socialMedia=" +
+          socialMedia +
+          "&userId=" +
+          localStorage.getItem("sonaarUserId")
       );
     }
   });
@@ -100,16 +106,12 @@ function submitImage(img, lang, text, postText, socialMedia) {
 
 function searchByUrl(url, lang, id) {
   const http = new XMLHttpRequest();
-  http.open(
-    "POST",
-    searchEndpoint,
-    true
-  );
+  http.open("POST", searchEndpoint, true);
   http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
   http.onreadystatechange = function () {
     if (http.readyState === 4 && http.status === 200) {
       const response = JSON.parse(http.responseText);
-      
+
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {
           type: "altForImage",
@@ -124,13 +126,13 @@ function searchByUrl(url, lang, id) {
 
   http.send(
     "imageUrl=" +
-    encodeURIComponent(url) +
-    "&lang=" +
-    parseLang(lang) +
-    "&type=consumption" +
-    "&platform=extension" +
-    "&socialMedia=" + socialMedia +
-    "&userId=" + localStorage.getItem('sonaarUserId')
+      encodeURIComponent(url) +
+      "&lang=" +
+      parseLang(lang) +
+      "&type=consumption" +
+      "&platform=extension" +
+      "&userId=" +
+      localStorage.getItem("sonaarUserId")
   );
 }
 
@@ -143,7 +145,13 @@ chrome.runtime.onMessage.addListener(function (message) {
       searchByUrl(message.url, message.lang, message.id);
       break;
     case "submit":
-      submitImage(message.img, message.lang, message.text, message.postText, message.socialMedia);
+      submitImage(
+        message.img,
+        message.lang,
+        message.text,
+        message.postText,
+        message.socialMedia
+      );
       break;
     default:
       console.log("default message");
